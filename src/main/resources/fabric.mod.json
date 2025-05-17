@@ -3,7 +3,7 @@
 	"id": "tcb-mod",
 	"version": "${version}",
 	"name": "TrialChamberBossMod",
-	"description": "Fabric Mod which adds a Trial Chamber Boss to the game.",
+	"description": "Fabric Mod which adds a Trial Chamber Boss to the game",
 	"authors": [
 		"DZultra"
 	],
