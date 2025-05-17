@@ -1,5 +1,5 @@
-# $mod_name
-$mod_description
+# TrialChamberBossMod-1.21.1
+Fabric Mod which adds a Trial Chamber Boss to the game.
 
 ## Installation
 1. Download and run the [Fabric installer](https://fabricmc.net/use).
