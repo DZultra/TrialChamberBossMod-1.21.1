@@ -11,6 +11,6 @@ public class TrialChamberBossMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("[TCB Mod] Loading Mod Contents");
+		LOGGER.info("[TCB Mod] Init: Loading Mod Contents");
 	}
 }

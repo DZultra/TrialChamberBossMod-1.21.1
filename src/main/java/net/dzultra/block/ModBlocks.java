@@ -1,0 +1,30 @@
+package net.dzultra.block;
+
+import net.dzultra.TrialChamberBossMod;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
+
+public class ModBlocks {
+
+    public static final Block BOSS_SPAWN_PILLAR = registerBlock("boss_spawn_pillar",
+            new BossSpawnPillarBlock(AbstractBlock.Settings.create().nonOpaque().strength(50.0f)));
+
+    private static Block registerBlock(String name, Block block) {
+        registerBlockItem(name, block);
+        return Registry.register(Registries.BLOCK, Identifier.of(TrialChamberBossMod.MOD_ID, name), block);
+    }
+
+    private static void registerBlockItem(String name, Block block) {
+        Registry.register(Registries.ITEM, Identifier.of(TrialChamberBossMod.MOD_ID, name),
+                new BlockItem(block, new Item.Settings()));
+    }
+
+    public static void registerModBlocks() {
+        TrialChamberBossMod.LOGGER.info("Registering Mod Blocks for " + TrialChamberBossMod.MOD_ID);
+    }
+}
