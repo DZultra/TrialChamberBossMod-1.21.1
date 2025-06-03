@@ -14,11 +14,15 @@ import net.minecraft.util.Identifier;
 public class ModItemGroups {
     public static final ItemGroup TCB_MOD_GROUP = Registry.register(Registries.ITEM_GROUP,
             Identifier.of(TrialChamberBossMod.MOD_ID, "tcb_mod_blocks"),
-            FabricItemGroup.builder().icon(() -> new ItemStack(Blocks.COPPER_BULB))
-                    .displayName(Text.translatable("itemgroup.tutorialmod.tcb_mod_blocks"))
+            FabricItemGroup.builder().icon(() -> new ItemStack(Blocks.COPPER_BLOCK))
+                    .displayName(Text.translatable("itemgroup.tcb-mod.tcb_mod_blocks"))
                     .entries((displayContext, entries) -> {
                         entries.add(ModBlocks.BOSS_SPAWN_PILLAR);
                         entries.add(ModItems.TRIAL_CHAMBER_BOSS_SPAWN_EGG);
                         entries.add(ModItems.SPAWN_SHARD);
                     }).build());
+
+    public static void registerModItemGroups() {
+
+    }
 }

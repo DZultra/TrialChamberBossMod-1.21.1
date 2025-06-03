@@ -2,6 +2,8 @@ package net.dzultra.block;
 
 
 import com.mojang.serialization.MapCodec;
+import net.dzultra.item.ModItems;
+import net.dzultra.networking.SyncTCBSpawnPillarBlockEntityS2CPayload;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.*;
@@ -14,6 +16,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
@@ -26,11 +30,18 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntityProvider {
+    public static final BooleanProperty ACTIVATED = BooleanProperty.of("activated");
     private static final VoxelShape SHAPE = Block.createCuboidShape(2, 0, 2, 14, 13, 14);
     public static final MapCodec<BossSpawnPillarBlock> CODEC = BossSpawnPillarBlock.createCodec(BossSpawnPillarBlock::new);
 
     public BossSpawnPillarBlock(Settings settings) {
         super(settings);
+        setDefaultState(this.getDefaultState().with(ACTIVATED, false));
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(ACTIVATED);
     }
 
     @Override
@@ -80,9 +91,14 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
             return ItemActionResult.FAIL;
         }
 
+        if(!stack.isOf(ModItems.SPAWN_SHARD) && !stack.isEmpty()) {
+            return ItemActionResult.CONSUME;
+        }
+
         if (bossSpawnPillarBlockEntity.isEmpty() && !stack.isEmpty()) {
             // Block Empty & Hand has Item -> Item from Hand into Block
             bossSpawnPillarBlockEntity.setStack(0, stack.copyWithCount(1));
+            world.setBlockState(bossSpawnPillarBlockEntity.getPos(), state.with(ACTIVATED, true), Block.NOTIFY_ALL);
             world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 2f);
             stack.decrement(1);
 
@@ -97,6 +113,7 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
             player.setStackInHand(Hand.MAIN_HAND, stackOnPedestal);
             world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 1f);
             bossSpawnPillarBlockEntity.setStack(0, ItemStack.EMPTY);
+            world.setBlockState(bossSpawnPillarBlockEntity.getPos(), state.with(ACTIVATED, false), Block.NOTIFY_ALL);
 
             bossSpawnPillarBlockEntity.markDirty();
             bossSpawnPillarBlockEntity.syncInventory();
@@ -105,21 +122,24 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
 
         else if (bossSpawnPillarBlockEntity.isEmpty() && stack.isEmpty()) {
             // Block Empty & Hand Empty -> Do nothing
+            world.setBlockState(bossSpawnPillarBlockEntity.getPos(), state.with(ACTIVATED, false), Block.NOTIFY_ALL);
             bossSpawnPillarBlockEntity.syncInventory();
             return ItemActionResult.CONSUME;
         }
 
         else if (!bossSpawnPillarBlockEntity.isEmpty() && !stack.isEmpty()) {
-            // Block has Item & Hand has Item -> If same ItemStack increment Stack, if not same ItemStack do nth
+            // Block has Item & Hand has Item -> If same ItemStack increment Stack in Hand, if not same ItemStack do nth
             if (stack.isOf(bossSpawnPillarBlockEntity.getStack(0).getItem()) && stack.getCount() < stack.getMaxCount()) {
                 world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 2f);
                 bossSpawnPillarBlockEntity.setStack(0, ItemStack.EMPTY);
                 stack.increment(1);
+                world.setBlockState(bossSpawnPillarBlockEntity.getPos(), state.with(ACTIVATED, false), Block.NOTIFY_ALL);
 
                 bossSpawnPillarBlockEntity.markDirty();
                 bossSpawnPillarBlockEntity.syncInventory();
                 world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
             } else {
+                world.setBlockState(bossSpawnPillarBlockEntity.getPos(), state.with(ACTIVATED, true), Block.NOTIFY_ALL);
                 sendSyncPacket(world, pos, bossSpawnPillarBlockEntity.getItems());
                 return ItemActionResult.CONSUME; // Do nothing but don't place block
             }
@@ -129,7 +149,7 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
 
     public static void sendSyncPacket(World world, BlockPos blockpos, DefaultedList<ItemStack> inventory) {
         if (world.isClient()) return;
-        SyncPedestalBlockEntityS2CPayload payload = new SyncPedestalBlockEntityS2CPayload(blockpos, inventory);
+        SyncTCBSpawnPillarBlockEntityS2CPayload payload = new SyncTCBSpawnPillarBlockEntityS2CPayload(blockpos, inventory);
 
         for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.world((ServerWorld) world)) {
             ServerPlayNetworking.send(serverPlayerEntity, payload);

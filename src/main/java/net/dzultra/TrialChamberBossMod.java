@@ -1,5 +1,9 @@
 package net.dzultra;
 
+import net.dzultra.entity.ModEntities;
+import net.dzultra.item.ModItemGroups;
+import net.dzultra.item.ModItems;
+import net.dzultra.networking.ModPayloads;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -12,5 +16,9 @@ public class TrialChamberBossMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("[TCB Mod] Init: Loading Mod Contents");
+		ModPayloads.registerModPayloads();
+		ModEntities.registerModEntities();
+		ModItems.registerModItems();
+		ModItemGroups.registerModItemGroups();
 	}
 }
