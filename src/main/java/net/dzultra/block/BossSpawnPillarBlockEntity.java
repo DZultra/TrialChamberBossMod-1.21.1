@@ -230,6 +230,6 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
         }
     }
 }
-// 118 tut nicht, er locked den SpawnPillar nicht nachdem er activiert ist
+// 118 tut nicht, er locked den SpawnPillar, der die ganze Logik ausführt nicht nachdem er aktiviert ist/das ganze Ding anfangen soll zu spawnen
 // Loop des spawnens
 // bei reset der SpawnPillars crash
