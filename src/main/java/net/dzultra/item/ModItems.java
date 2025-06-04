@@ -12,7 +12,7 @@ import net.minecraft.util.Rarity;
 public class ModItems {
 
     public static final Item TRIAL_CHAMBER_BOSS_SPAWN_EGG = registerItem("tcb_spawn_egg",
-            new SpawnEggItem(ModEntities.TRIAL_CHAMBER_BOSS, 0xFFD67B5B, 0xFF4FAB90, new Item.Settings()));
+            new SpawnEggItem(ModEntities.TRIAL_CHAMBER_BOSS, 0xFFD67B5B, 0xFFE3826C, new Item.Settings()));
 
     public static final Item SPAWN_SHARD = registerItem("spawn_shard",
             new Item(new Item.Settings().rarity(Rarity.EPIC)));
@@ -25,3 +25,4 @@ public class ModItems {
 
     }
 }
+

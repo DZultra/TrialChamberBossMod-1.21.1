@@ -42,7 +42,7 @@ public record SyncTCBSpawnPillarBlockEntityS2CPayload(BlockPos blockPos, Default
         }
     };
 
-    // Define the PacketCodec for SyncPedestalBlockEntityS2CPayload
+    // Define the PacketCodec
     public static final PacketCodec<RegistryByteBuf, SyncTCBSpawnPillarBlockEntityS2CPayload> CODEC = PacketCodec.tuple(
             BlockPos.PACKET_CODEC, SyncTCBSpawnPillarBlockEntityS2CPayload::blockPos, // Handle BlockPos
             ITEM_STACK_LIST_CODEC, SyncTCBSpawnPillarBlockEntityS2CPayload::inventory, // Handle DefaultedList<ItemStack>

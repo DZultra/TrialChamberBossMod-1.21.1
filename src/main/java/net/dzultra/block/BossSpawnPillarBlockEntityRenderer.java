@@ -27,7 +27,7 @@ public class BossSpawnPillarBlockEntityRenderer implements BlockEntityRenderer<B
         ItemStack stack = entity.getStack(0);
         BlockPos entity_pos = entity.getPos();
         matrices.push();
-        matrices.translate(0.5f, 1.15f, 0.5f); // Position
+        matrices.translate(0.5f, 1.3f, 0.5f); // Position
         matrices.scale(0.5f, 0.5f, 0.5f); // Size
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getRenderingRotation())); // Rotation
 
