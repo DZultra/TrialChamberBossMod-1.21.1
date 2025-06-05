@@ -101,12 +101,16 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
             return ItemActionResult.CONSUME;
         }
 
+        if (stack.getItem() != ModItems.SPAWN_SHARD && !stack.isEmpty()){
+            return ItemActionResult.CONSUME;
+        }
+
         if (bossSpawnPillarBlockEntity.isEmpty() && !stack.isEmpty()) {
             // Block Empty & Hand has Item -> Item from Hand into Block
             bossSpawnPillarBlockEntity.setStack(0, stack.copyWithCount(1));
             world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 2f);
             stack.decrement(1);
-
+            world.setBlockState(pos, state.with(BossSpawnPillarBlock.ACTIVATED, true));
             bossSpawnPillarBlockEntity.markDirty();
             bossSpawnPillarBlockEntity.syncInventory();
             world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
@@ -118,7 +122,7 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
             player.setStackInHand(Hand.MAIN_HAND, stackOnSpawnPillar);
             world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 1f);
             bossSpawnPillarBlockEntity.setStack(0, ItemStack.EMPTY);
-
+            world.setBlockState(pos, state.with(BossSpawnPillarBlock.ACTIVATED, false));
             bossSpawnPillarBlockEntity.markDirty();
             bossSpawnPillarBlockEntity.syncInventory();
             world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
@@ -126,6 +130,7 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
 
         else if (bossSpawnPillarBlockEntity.isEmpty() && stack.isEmpty()) {
             // Block Empty & Hand Empty -> Do nothing
+            world.setBlockState(pos, state.with(BossSpawnPillarBlock.ACTIVATED, false));
             bossSpawnPillarBlockEntity.syncInventory();
             return ItemActionResult.CONSUME;
         }
@@ -136,12 +141,11 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
                 world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 2f);
                 bossSpawnPillarBlockEntity.setStack(0, ItemStack.EMPTY);
                 stack.increment(1);
-
+                world.setBlockState(pos, state.with(BossSpawnPillarBlock.ACTIVATED, false));
                 bossSpawnPillarBlockEntity.markDirty();
                 bossSpawnPillarBlockEntity.syncInventory();
                 world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
             } else {
-                world.setBlockState(bossSpawnPillarBlockEntity.getPos(), state.with(ACTIVATED, true), Block.NOTIFY_ALL);
                 sendSyncPacket(world, pos, bossSpawnPillarBlockEntity.getItems());
                 return ItemActionResult.CONSUME; // Do nothing but don't place block
             }

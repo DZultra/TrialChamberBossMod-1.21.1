@@ -12,7 +12,11 @@ import net.minecraft.util.Identifier;
 public class ModBlocks {
 
     public static final Block BOSS_SPAWN_PILLAR = registerBlock("boss_spawn_pillar",
-            new BossSpawnPillarBlock(AbstractBlock.Settings.create().nonOpaque().strength(50.0f)));
+            new BossSpawnPillarBlock(AbstractBlock.Settings.create()
+                    .nonOpaque()
+                    .strength(-1.0F, 3600000.0F)
+            )
+    );
 
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);

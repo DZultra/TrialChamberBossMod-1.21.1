@@ -1,7 +1,7 @@
 package net.dzultra.block;
 
 import net.dzultra.TrialChamberBossMod;
-import net.dzultra.item.ModItems;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
@@ -29,7 +29,7 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
     private float rotation = 0;
     private int particleTickCounter = 0;
     protected static int spawnTickCounter = 0;
-    protected static final int maxSpawnTickTime = 40;
+    protected static final int maxSpawnTickTime = 80;
 
     public BossSpawnPillarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SPAWN_PILLAR_BE, pos, state);
@@ -40,14 +40,6 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
 
         if (!(world.getBlockEntity(pos) instanceof BossSpawnPillarBlockEntity bossSpawnPillarBlockEntity)) {
             return;
-        }
-
-        ItemStack stack = bossSpawnPillarBlockEntity.inventory.getFirst();
-
-        if (!stack.isEmpty() && stack.getItem() == ModItems.SPAWN_SHARD) {
-            world.setBlockState(bossSpawnPillarBlockEntity.pos, state.with(BossSpawnPillarBlock.ACTIVATED, true));
-        } else {
-            world.setBlockState(bossSpawnPillarBlockEntity.pos, state.with(BossSpawnPillarBlock.ACTIVATED, false));
         }
 
         if (state.get(BossSpawnPillarBlock.ACTIVATED)) {
@@ -62,7 +54,7 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
         }
 
         if(shouldStartBossSpawn(world, state, bossSpawnPillarBlockEntity)){
-            startBossSpawn(world, state, bossSpawnPillarBlockEntity, pos);
+            startBossSpawn(world, state, bossSpawnPillarBlockEntity, bossSpawnPillarBlockEntity.pos);
         }
     }
 
@@ -128,32 +120,6 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
         world.setBlockState(bossSpawnPillarBlockEntity.pos, state.with(BossSpawnPillarBlock.HAS_STARTED_SPAWNED, true));
 
         // While the spawning is happening, make it so if a Spawn Pillar is broken or not active anymore to nuke the animation
-    }
-
-    protected static void resetSpawnPillars(BlockPos block0Pos, World world, BlockState state) {
-        BlockPos block1Pos = block0Pos.add(3, 0, 0);
-        BlockPos block2Pos = block0Pos.add(0, 0, 3);
-        BlockPos block3Pos = block0Pos.add(3, 0, 3);
-
-        BossSpawnPillarBlockEntity block0Entity = (BossSpawnPillarBlockEntity) world.getBlockEntity(block0Pos);
-        BossSpawnPillarBlockEntity block1Entity = (BossSpawnPillarBlockEntity) world.getBlockEntity(block1Pos);
-        BossSpawnPillarBlockEntity block2Entity = (BossSpawnPillarBlockEntity) world.getBlockEntity(block2Pos);
-        BossSpawnPillarBlockEntity block3Entity = (BossSpawnPillarBlockEntity) world.getBlockEntity(block3Pos);
-
-        block0Entity.setStack(0, ItemStack.EMPTY);
-        block1Entity.setStack(0, ItemStack.EMPTY);
-        block2Entity.setStack(0, ItemStack.EMPTY);
-        block3Entity.setStack(0, ItemStack.EMPTY);
-
-        block0Entity.markDirty();
-        block1Entity.markDirty();
-        block2Entity.markDirty();
-        block3Entity.markDirty();
-
-        block0Entity.syncInventory();
-        block1Entity.syncInventory();
-        block2Entity.syncInventory();
-        block3Entity.syncInventory();
     }
 
     public void spawnParticleAbovePillar(SimpleParticleType particleType, World world, BossSpawnPillarBlockEntity bossSpawnPillarBlockEntity) {
