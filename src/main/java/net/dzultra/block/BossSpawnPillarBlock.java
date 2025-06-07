@@ -76,6 +76,10 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof BossSpawnPillarBlockEntity bossSpawnPillarBlockEntity) {
+                if (bossSpawnPillarBlockEntity.isExecutingLogic()) {
+                    BossSpawnAnimation.resetSpawnPillars(world, pos);
+                }
+
                 ItemScatterer.spawn(world, pos, bossSpawnPillarBlockEntity);
                 world.updateComparators(pos, this);
             }

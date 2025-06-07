@@ -1,11 +1,8 @@
 package net.dzultra.block;
 
 import net.dzultra.TrialChamberBossMod;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -15,10 +12,10 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +26,7 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
     private float rotation = 0;
     private int particleTickCounter = 0;
     protected static int spawnTickCounter = 0;
-    protected static final int maxSpawnTickTime = 80;
+    public static boolean executingLogic = false;
 
     public BossSpawnPillarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SPAWN_PILLAR_BE, pos, state);
@@ -48,13 +45,13 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
 
         if (state.get(BossSpawnPillarBlock.HAS_STARTED_SPAWNED)) {
             if (!world.isClient()) {
-                spawnTickCounter++;
-                BossSpawnAnimation.tickBossSpawnAnimation(world, state, bossSpawnPillarBlockEntity, spawnTickCounter);
+                BossSpawnAnimation.tickBossSpawnAnimation(world, state, bossSpawnPillarBlockEntity, bossSpawnPillarBlockEntity.pos, spawnTickCounter);
             }
         }
 
         if(shouldStartBossSpawn(world, state, bossSpawnPillarBlockEntity)){
-            startBossSpawn(world, state, bossSpawnPillarBlockEntity, bossSpawnPillarBlockEntity.pos);
+            executingLogic = true;
+            startBossSpawn(world, bossSpawnPillarBlockEntity, bossSpawnPillarBlockEntity.getPos());
         }
     }
 
@@ -80,16 +77,16 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
         }
 
         // Did the spawning already begin? If so, don't start spawning again
-        if(state == world.getBlockState(bossSpawnPillarBlockEntity.pos).with(BossSpawnPillarBlock.HAS_STARTED_SPAWNED, true)) {
+        if(state == getBlockState(world, block0Pos, BossSpawnPillarBlock.HAS_STARTED_SPAWNED, true)) {
             //TrialChamberBossMod.LOGGER.info("[TCB] hasStartedSpawning: " + bossSpawnPillarBlockEntity.pos);
             return false;
         }
 
         // Are the Spawn Pillars ACTIVATED aka have a Spawn Shard on them? If so, continue and return true
-        if((block0 == world.getBlockState(block0Pos).with(BossSpawnPillarBlock.ACTIVATED, false))
-                || (block1 == world.getBlockState(block1Pos).with(BossSpawnPillarBlock.ACTIVATED, false))
-                || (block2 == world.getBlockState(block2Pos).with(BossSpawnPillarBlock.ACTIVATED, false))
-                || (block3 == world.getBlockState(block3Pos).with(BossSpawnPillarBlock.ACTIVATED, false))
+        if((block0 == getBlockState(world, block0Pos, BossSpawnPillarBlock.ACTIVATED, false))
+                || (block1 == getBlockState(world, block1Pos, BossSpawnPillarBlock.ACTIVATED, false))
+                || (block2 == getBlockState(world, block2Pos, BossSpawnPillarBlock.ACTIVATED, false))
+                || (block3 == getBlockState(world, block3Pos, BossSpawnPillarBlock.ACTIVATED, false))
         ) {
             //TrialChamberBossMod.LOGGER.info("[TCB] Required Blocks aren't activated: " + bossSpawnPillarBlockEntity.pos);
             return false;
@@ -98,26 +95,20 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
         return true;
     }
 
-    private static void startBossSpawn(World world, BlockState state, BossSpawnPillarBlockEntity bossSpawnPillarBlockEntity, BlockPos block0Pos) {
+    private static void startBossSpawn(World world, BossSpawnPillarBlockEntity bossSpawnPillarBlockEntity, BlockPos block0Pos) {
         if (world.isClient()) return;
-        TrialChamberBossMod.LOGGER.info("Started Boss Spawn1: " + bossSpawnPillarBlockEntity.pos);
-        TrialChamberBossMod.LOGGER.info("Started Boss Spawn2: " + block0Pos);
+        TrialChamberBossMod.LOGGER.info("Started Boss Spawn: " + bossSpawnPillarBlockEntity.pos);
 
         BlockPos block1Pos = block0Pos.add(3, 0, 0);
         BlockPos block2Pos = block0Pos.add(0, 0, 3);
         BlockPos block3Pos = block0Pos.add(3, 0, 3);
-        TrialChamberBossMod.LOGGER.info("Started Boss Spawn3: " + block0Pos);
-        world.setBlockState(block0Pos, state.with(BossSpawnPillarBlock.LOCKED, true));
-        world.setBlockState(block1Pos, state.with(BossSpawnPillarBlock.LOCKED, true));
-        world.setBlockState(block2Pos, state.with(BossSpawnPillarBlock.LOCKED, true));
-        world.setBlockState(block3Pos, state.with(BossSpawnPillarBlock.LOCKED, true));
 
-        BlockPos spawnPos = getBossSpawnPos(bossSpawnPillarBlockEntity.pos);
-        CreeperEntity creeper = new CreeperEntity(EntityType.CREEPER, world);
-        creeper.refreshPositionAndAngles(Vec3d.of(spawnPos), 360F, 0);
-        world.spawnEntity(creeper);
+        setBlockState(world, block0Pos, BossSpawnPillarBlock.LOCKED, true);
+        setBlockState(world, block1Pos, BossSpawnPillarBlock.LOCKED, true);
+        setBlockState(world, block2Pos, BossSpawnPillarBlock.LOCKED, true);
+        setBlockState(world, block3Pos, BossSpawnPillarBlock.LOCKED, true);
 
-        world.setBlockState(bossSpawnPillarBlockEntity.pos, state.with(BossSpawnPillarBlock.HAS_STARTED_SPAWNED, true));
+        setBlockState(world, block0Pos, BossSpawnPillarBlock.HAS_STARTED_SPAWNED, true);
 
         // While the spawning is happening, make it so if a Spawn Pillar is broken or not active anymore to nuke the animation
     }
@@ -131,6 +122,7 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
             double velocityY = ThreadLocalRandom.current().nextDouble(0, 0.02);
             double velocityZ = ThreadLocalRandom.current().nextDouble(-0.02, 0.02);
 
+            // Particles Spawned Client Side
             world.addParticle(particleType, pos.getX() + 0.5, pos.getY() + 1.3, pos.getZ() + 0.5, velocityX, velocityY, velocityZ);
             particleTickCounter = 0;
         }
@@ -142,12 +134,24 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
 
     // Other
 
+    protected static void setBlockState(World world, BlockPos pos, Property<Boolean> property, boolean b) {
+        world.setBlockState(pos, world.getBlockState(pos).with(property, b));
+    }
+
+    protected static BlockState getBlockState(World world, BlockPos pos, Property<Boolean> property, boolean b) {
+        return world.getBlockState(pos).with(property, b);
+    }
+
     public float getRenderingRotation() {
         rotation += 0.5f;
         if (rotation >= 360) {
             rotation = 0;
         }
         return rotation;
+    }
+
+    protected boolean isExecutingLogic(){
+        return executingLogic;
     }
 
     @Override
@@ -196,6 +200,5 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
         }
     }
 }
-// 118 tut nicht, er locked den SpawnPillar, der die ganze Logik ausführt nicht nachdem er aktiviert ist/das ganze Ding anfangen soll zu spawnen
 // Loop des spawnens
 // bei reset der SpawnPillars crash
