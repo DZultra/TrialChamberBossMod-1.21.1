@@ -24,8 +24,6 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +31,6 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
     public static final BooleanProperty ACTIVATED = BooleanProperty.of("activated");
     public static final BooleanProperty HAS_STARTED_SPAWNED = BooleanProperty.of("has_started_spawn");
     public static final BooleanProperty LOCKED = BooleanProperty.of("locked");
-    private static final VoxelShape SHAPE = Block.createCuboidShape(2, 0, 2, 14, 13, 14);
     public static final MapCodec<BossSpawnPillarBlock> CODEC = BossSpawnPillarBlock.createCodec(BossSpawnPillarBlock::new);
 
     public BossSpawnPillarBlock(Settings settings) {
@@ -48,11 +45,6 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
         builder.add(ACTIVATED);
         builder.add(HAS_STARTED_SPAWNED);
         builder.add(LOCKED);
-    }
-
-    @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return SHAPE;
     }
 
     @Override
