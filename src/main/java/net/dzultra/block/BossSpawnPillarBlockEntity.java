@@ -139,6 +139,9 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
     }
 
     protected static BlockState getBlockState(World world, BlockPos pos, Property<Boolean> property, boolean b) {
+        if(!(world.getBlockEntity(pos) instanceof BossSpawnPillarBlockEntity)) {
+            return null;
+        }
         return world.getBlockState(pos).with(property, b);
     }
 
@@ -163,12 +166,14 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
         Inventories.writeNbt(nbt, inventory, registryLookup);
+        nbt.putInt("spawnTickCounter", spawnTickCounter);
     }
 
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
         Inventories.readNbt(nbt, inventory, registryLookup);
+        spawnTickCounter = nbt.getInt("spawnTickCounter");
     }
 
     @Override
@@ -200,5 +205,3 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
         }
     }
 }
-// Loop des spawnens
-// bei reset der SpawnPillars crash
