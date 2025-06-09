@@ -25,8 +25,9 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private float rotation = 0;
     private int particleTickCounter = 0;
-    protected static int spawnTickCounter = 0;
-    public static boolean executingLogic = false;
+    protected int spawnTickCounter = 0;
+    protected boolean executingLogic = false;
+
 
     public BossSpawnPillarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SPAWN_PILLAR_BE, pos, state);
@@ -45,7 +46,7 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
 
         if (state.get(BossSpawnPillarBlock.HAS_STARTED_SPAWNED)) {
             if (!world.isClient()) {
-                BossSpawnAnimation.tickBossSpawnAnimation(world, state, bossSpawnPillarBlockEntity, bossSpawnPillarBlockEntity.pos, spawnTickCounter);
+                BossSpawnAnimation.tickBossSpawnAnimation(world, state, bossSpawnPillarBlockEntity, bossSpawnPillarBlockEntity.pos);
             }
         }
 
@@ -95,6 +96,28 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
         return true;
     }
 
+    protected static boolean couldExecuteLogic(World world, BlockEntity be) {
+        BlockPos block0Pos = be.getPos();
+        BlockPos block1Pos = block0Pos.add(3, 0, 0);
+        BlockPos block2Pos = block0Pos.add(0, 0, 3);
+        BlockPos block3Pos = block0Pos.add(3, 0, 3);
+
+        BlockState block0 = world.getBlockState(block0Pos);
+        BlockState block1 = world.getBlockState(block1Pos);
+        BlockState block2 = world.getBlockState(block2Pos);
+        BlockState block3 = world.getBlockState(block3Pos);
+
+        // Are the needed Blocks "Spawn Pillars"? If so, continue
+        if (!block1.isOf(ModBlocks.BOSS_SPAWN_PILLAR)
+                || !block2.isOf(ModBlocks.BOSS_SPAWN_PILLAR)
+                || !block3.isOf(ModBlocks.BOSS_SPAWN_PILLAR)
+        ) {
+            //TrialChamberBossMod.LOGGER.info("[TCB] Required Blocks aren't Spawn Pillars: " + bossSpawnPillarBlockEntity.pos);
+            return false;
+        }
+        return true;
+    }
+
     private static void startBossSpawn(World world, BossSpawnPillarBlockEntity bossSpawnPillarBlockEntity, BlockPos block0Pos) {
         if (world.isClient()) return;
         TrialChamberBossMod.LOGGER.info("Started Boss Spawn: " + bossSpawnPillarBlockEntity.pos);
@@ -123,7 +146,7 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
             double velocityZ = ThreadLocalRandom.current().nextDouble(-0.02, 0.02);
 
             // Particles Spawned Client Side
-            world.addParticle(particleType, pos.getX() + 0.5, pos.getY() + 1.3, pos.getZ() + 0.5, velocityX, velocityY, velocityZ);
+            world.addParticle(particleType, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, velocityX, velocityY, velocityZ);
             particleTickCounter = 0;
         }
     }
@@ -153,10 +176,6 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
         return rotation;
     }
 
-    protected boolean isExecutingLogic(){
-        return executingLogic;
-    }
-
     @Override
     public DefaultedList<ItemStack> getItems() {
         return inventory;
@@ -166,7 +185,9 @@ public class BossSpawnPillarBlockEntity extends BlockEntity implements Implement
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
         Inventories.writeNbt(nbt, inventory, registryLookup);
-        nbt.putInt("spawnTickCounter", spawnTickCounter);
+        if (executingLogic) {
+            nbt.putInt("spawnTickCounter", spawnTickCounter);
+        }
     }
 
     @Override

@@ -3,7 +3,6 @@ package net.dzultra;
 import net.dzultra.block.BossSpawnPillarBlockEntity;
 import net.dzultra.block.BossSpawnPillarBlockEntityRenderer;
 import net.dzultra.block.ModBlockEntities;
-import net.dzultra.entity.ModEntities;
 import net.dzultra.networking.SyncTCBSpawnPillarBlockEntityS2CPayload;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;

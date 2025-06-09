@@ -35,7 +35,7 @@ public class BossSpawnPillarBlockEntityRenderer implements BlockEntityRenderer<B
         ItemStack stack = entity.getStack(0);
         BlockPos entity_pos = entity.getPos();
         matrices.push();
-        matrices.translate(0.5f, 1.3f, 0.5f); // Position
+        matrices.translate(0.5f, 1.5f, 0.5f); // Position
         matrices.scale(0.5f, 0.5f, 0.5f); // Size
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getRenderingRotation())); // Rotation
 
@@ -43,8 +43,8 @@ public class BossSpawnPillarBlockEntityRenderer implements BlockEntityRenderer<B
                 entity_pos), OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), 1);
         matrices.pop();
 
-        if (BossSpawnPillarBlockEntity.spawnTickCounter >= 80
-                && BossSpawnPillarBlockEntity.spawnTickCounter <= 160
+        if (entity.spawnTickCounter >= 200
+                && entity.spawnTickCounter <= 300
                 && entity.getWorld().getBlockState(entity.getPos()) == BossSpawnPillarBlockEntity.getBlockState(entity.getWorld(), entity.getPos(), BossSpawnPillarBlock.HAS_STARTED_SPAWNED, true)) {
             matrices.translate(0f, 0f, 0f); // Position
             renderBeam(matrices, vertexConsumers, tickDelta, entity, entity.getPos());

@@ -15,19 +15,19 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.*;
 
 public class BossSpawnAnimation {
-    protected static final int maxSpawnTickTime = 220;
-
+    protected static final int maxSpawnTickTime = 400;
     // This function is only executed on the main BossSpawnPillarEntity which all the Spawning Logic executes
     // And we are fully Server Side
     // spawnTickCounter counts upwards 1 per Tick after the Spawning has begun
-    protected static void tickBossSpawnAnimation(World world, BlockState state, BossSpawnPillarBlockEntity block0Entity, BlockPos pos, Integer spawnTickCounter) {
-        BossSpawnPillarBlockEntity.spawnTickCounter++;
+    protected static void tickBossSpawnAnimation(World world, BlockState state, BossSpawnPillarBlockEntity block0Entity, BlockPos pos) {
+        block0Entity.spawnTickCounter++;
         //TrialChamberBossMod.LOGGER.info("[TCB] SpawnTickCounter: " + spawnTickCounter);
 
         if(!shouldContinueSpawning(world, block0Entity)) {
@@ -35,18 +35,19 @@ public class BossSpawnAnimation {
             return;
         }
 
-        if (spawnTickCounter <= 80) {
+        // Particle Rays: 4s-9s
+        if (block0Entity.spawnTickCounter >= 80 && block0Entity.spawnTickCounter <= 500) {
             if (world instanceof ServerWorld serverWorld) {
-                serverWorld.spawnParticles(ParticleTypes.ELECTRIC_SPARK,
-                        pos.getX() + 2, pos.getY() + 3, pos.getZ() + 2,
-                        1, // count
-                        0, 0, 0, // offset
-                        0 // speed
-                );
+                spawnParticleRays(serverWorld, pos, block0Entity.spawnTickCounter);
             }
         }
-        if (spawnTickCounter == 160) {
-            BossSpawnPillarBlockEntity.executingLogic = false;
+        // Beam: 10s-15s (Inside BlockEntityRenderer)
+        // Item Travel 10s-15s
+        if (block0Entity.spawnTickCounter >= 200 && block0Entity.spawnTickCounter <= 300) {
+
+        }
+
+        if (block0Entity.spawnTickCounter == 320) {
 
             BlockPos block0Pos = block0Entity.getPos();
             BlockPos block1Pos = block0Pos.add(3, 0, 0);
@@ -88,39 +89,66 @@ public class BossSpawnAnimation {
         BlockPos pos1 = pos.add(3, 0 ,3);
         BlockPos pos2 = pos.add(3, 0 ,0);
         BlockPos pos3 = pos.add(0, 0 ,3);
-
-        List<BlockPos> additionalBlocks = List.of(
-                pos.add(0,-1,-2), pos.add(0,0,-2),
-                pos.add(0,-1,-3), pos.add(0,0,-3),
-                pos.add(-2,-2,0), pos.add(-2,-1,0),
-                pos.add(-3,-2,0), pos.add(-3,-1,0),
-
-                pos1.add(0,-1,2), pos1.add(0,0,2),
-                pos1.add(0,-1,3), pos1.add(0,0,3),
-                pos1.add(2,-2,0), pos1.add(2,-1,0),
-                pos1.add(3,-2,0), pos1.add(3,-1,0),
-
-                pos2.add(2,-1,0), pos2.add(2,0,0),
-                pos2.add(3,-1,0), pos2.add(3,0,0),
-                pos2.add(0,-2,-2), pos2.add(0,-1,-2),
-                pos2.add(0,-2,-3), pos2.add(0,-1,-3),
-
-                pos3.add(-2,-1,0), pos3.add(-2,0,0),
-                pos3.add(-3,-1,0), pos3.add(-3,0,0),
-                pos3.add(0,-2,2), pos3.add(0,-1,2),
-                pos3.add(0,-2,3), pos3.add(0,-1,3)
-        );
+        List<BlockPos> additionalBlocks = List.of(pos.add(0,-1,-2), pos.add(0,0,-2), pos.add(0,-1,-3), pos.add(0,0,-3), pos.add(-2,-2,0), pos.add(-2,-1,0), pos.add(-3,-2,0), pos.add(-3,-1,0), pos1.add(0,-1,2), pos1.add(0,0,2), pos1.add(0,-1,3), pos1.add(0,0,3), pos1.add(2,-2,0), pos1.add(2,-1,0), pos1.add(3,-2,0), pos1.add(3,-1,0), pos2.add(2,-1,0), pos2.add(2,0,0), pos2.add(3,-1,0), pos2.add(3,0,0), pos2.add(0,-2,-2), pos2.add(0,-1,-2), pos2.add(0,-2,-3), pos2.add(0,-1,-3), pos3.add(-2,-1,0), pos3.add(-2,0,0), pos3.add(-3,-1,0), pos3.add(-3,0,0), pos3.add(0,-2,2), pos3.add(0,-1,2), pos3.add(0,-2,3), pos3.add(0,-1,3));
         // Finally done with this shit
-        if (spawnTickCounter == 180) {
+        if (block0Entity.spawnTickCounter == 340) {
             shiftAreaDownByOne(world, block0Entity.getPos().add(1, 0, 1), additionalBlocks);
         }
-        if (spawnTickCounter == 200) {
+        if (block0Entity.spawnTickCounter == 360) {
             shiftAreaDownByOne(world, block0Entity.getPos().add(1, 0, 1), additionalBlocks);
         }
 
-        if(BossSpawnPillarBlockEntity.spawnTickCounter == maxSpawnTickTime) {
-            BossSpawnPillarBlockEntity.spawnTickCounter = 0;
+        if(block0Entity.spawnTickCounter == maxSpawnTickTime) {
             BossSpawnPillarBlockEntity.setBlockState(world, block0Entity.getPos(), BossSpawnPillarBlock.HAS_STARTED_SPAWNED, false);
+            block0Entity.spawnTickCounter = 0;
+            block0Entity.executingLogic = false;
+        }
+    }
+
+    private static void spawnParticleRays(ServerWorld world, BlockPos pos0, Integer spawnTickCounter) {
+        Position pos = new Position() {
+            @Override
+            public double getX() {
+                return pos0.getX() + 0.5;
+            }
+
+            @Override
+            public double getY() {
+                return pos0.getY() + 1.5;
+            }
+
+            @Override
+            public double getZ() {
+                return pos0.getZ() + 0.5;
+            }
+        };
+
+        spawnParticle(world, spawnTickCounter, pos,  80, 0.0, 0.0, 0.0);
+        spawnParticle(world, spawnTickCounter, pos,  85, 0.1, 0.1, 0.1);
+        spawnParticle(world, spawnTickCounter, pos,  90, 0.2, 0.2, 0.2);
+        spawnParticle(world, spawnTickCounter, pos,  95, 0.3, 0.3, 0.3);
+        spawnParticle(world, spawnTickCounter, pos, 100, 0.4, 0.4, 0.4);
+        spawnParticle(world, spawnTickCounter, pos, 105, 0.5, 0.5, 0.5);
+        spawnParticle(world, spawnTickCounter, pos, 110, 0.6, 0.6, 0.6);
+        spawnParticle(world, spawnTickCounter, pos, 115, 0.7, 0.7, 0.7);
+        spawnParticle(world, spawnTickCounter, pos, 120, 0.8, 0.8, 0.8);
+        spawnParticle(world, spawnTickCounter, pos, 125, 0.9, 0.9, 0.9);
+        spawnParticle(world, spawnTickCounter, pos, 130, 1.0, 1.0, 1.0);
+        spawnParticle(world, spawnTickCounter, pos, 135, 1.1, 1.1, 1.1);
+        spawnParticle(world, spawnTickCounter, pos, 140, 1.2, 1.2, 1.2);
+        spawnParticle(world, spawnTickCounter, pos, 145, 1.3, 1.3, 1.3);
+        spawnParticle(world, spawnTickCounter, pos, 150, 1.4, 1.4, 1.4);
+        spawnParticle(world, spawnTickCounter, pos, 155, 1.5, 1.5, 1.5);
+    }
+
+    private static void spawnParticle(ServerWorld world, Integer spawnTickCounter, Position pos, Integer threshold, double x_offset, double y_offset, double z_offset) {
+        if (spawnTickCounter >= threshold) {
+            world.spawnParticles(ParticleTypes.ELECTRIC_SPARK,
+                    pos.getX() + x_offset, pos.getY() + y_offset, pos.getZ() + z_offset,
+                    1, // count
+                    0, 0, 0, // offset
+                    0 // speed
+            );
         }
     }
 
@@ -200,7 +228,6 @@ public class BossSpawnAnimation {
                 .forEach(pos -> handleTopLayerBlock(world, pos));
     }
 
-    // Helper methods
     private static void handleBottomLayerBlock(World world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
         BlockEntity blockEntity = world.getBlockEntity(pos);

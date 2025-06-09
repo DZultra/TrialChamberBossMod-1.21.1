@@ -1,0 +1,12 @@
+1. Particle Rays from all 4 Pillars to the middle where Boss Would spawn
+2. 4 Spawn Shards Travel on those rays into the middle while beams are on the Pillars
+3. When all 4 Spawn Shards are in the Middle, the beams fuse together in a circle motion,
+   in the middle, forming one Beam
+4. Items + Beam Vanishes
+5. Boss Spawns with Sounds and somewhat explosion effect with the spawn pos as the origin
+6. Room Transformation
+    -> Pedestal Dropdown
+    -> 4 Pillars on the sides (not corners) have a beam out of fire particles from top to bottom
+    -> Fire Beam move and focus on the Boss which hasn't moved yet -> gives it power
+    -> while it gives him power, step by step, the pillars held by chains are moved up, using upwards shifting
+    -> Boss Activation
