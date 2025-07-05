@@ -17,6 +17,7 @@ public class ModModelProvider extends FabricModelProvider {
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
         blockStateModelGenerator.registerSingleton(ModBlocks.BOSS_SPAWN_PILLAR, TexturedModel.CUBE_BOTTOM_TOP);
+        blockStateModelGenerator.registerSingleton(ModBlocks.SPAWN_PILLAR, TexturedModel.CUBE_BOTTOM_TOP);
     }
 
     @Override

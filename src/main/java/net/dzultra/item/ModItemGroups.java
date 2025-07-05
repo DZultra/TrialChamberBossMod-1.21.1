@@ -17,7 +17,7 @@ public class ModItemGroups {
             FabricItemGroup.builder().icon(() -> new ItemStack(Blocks.COPPER_BLOCK))
                     .displayName(Text.translatable("itemgroup.tcb-mod.tcb_mod_blocks"))
                     .entries((displayContext, entries) -> {
-                        entries.add(ModBlocks.BOSS_SPAWN_PILLAR);
+                        entries.add(ModBlocks.SPAWN_PILLAR);
                         entries.add(ModItems.TRIAL_CHAMBER_BOSS_SPAWN_EGG);
                         entries.add(ModItems.SPAWN_SHARD);
                     }).build());

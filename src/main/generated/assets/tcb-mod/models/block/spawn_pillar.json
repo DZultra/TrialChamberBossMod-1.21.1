@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "tcb-mod:block/spawn_pillar_bottom",
+    "side": "tcb-mod:block/spawn_pillar_side",
+    "top": "tcb-mod:block/spawn_pillar_top"
+  }
+}

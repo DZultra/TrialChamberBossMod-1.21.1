@@ -1,6 +1,9 @@
-// 1.21.1	2025-06-03T19:42:45.0344629	TrialChamberBossMod/Model Definitions
-723d8d106142d89aa45c2354ae4747ee4a62abae assets\tcb-mod\blockstates\boss_spawn_pillar.json
+// 1.21.1	2025-07-05T14:01:32.7640462	TrialChamberBossMod/Model Definitions
+5b6792db33a5bd987fcb9974514a387b02f802df assets\tcb-mod\blockstates\spawn_pillar.json
+ed76afe08c1ed924989854c6ee782ec0f284da7d assets\tcb-mod\models\item\spawn_pillar.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\tcb-mod\models\item\tcb_spawn_egg.json
 416747d680aafe737bca40c02a2ea9e50a738a29 assets\tcb-mod\models\item\spawn_shard.json
-22cf37413ca48b828c236ecd992f96e6cea3a278 assets\tcb-mod\models\block\boss_spawn_pillar.json
+1fda55bf310680b89db209490ff3ef3344f23c14 assets\tcb-mod\models\block\spawn_pillar.json
 6eacae7d5a67967d781e9f9c27a61d7a497cb57d assets\tcb-mod\models\item\boss_spawn_pillar.json
+723d8d106142d89aa45c2354ae4747ee4a62abae assets\tcb-mod\blockstates\boss_spawn_pillar.json
+22cf37413ca48b828c236ecd992f96e6cea3a278 assets\tcb-mod\models\block\boss_spawn_pillar.json

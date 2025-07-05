@@ -1,6 +1,5 @@
 package net.dzultra.block;
 
-import net.dzultra.TrialChamberBossMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -23,6 +22,7 @@ import java.util.*;
 
 public class BossSpawnAnimation {
     protected static final int maxSpawnTickTime = 400;
+    protected static boolean shouldRenderBeams = false;
     // This function is only executed on the main BossSpawnPillarEntity which all the Spawning Logic executes
     // And we are fully Server Side
     // spawnTickCounter counts upwards 1 per Tick after the Spawning has begun
@@ -44,7 +44,7 @@ public class BossSpawnAnimation {
         // Beam: 10s-15s (Inside BlockEntityRenderer)
         // Item Travel 10s-15s
         if (block0Entity.spawnTickCounter >= 200 && block0Entity.spawnTickCounter <= 300) {
-
+            shouldRenderBeams = true;
         }
 
         if (block0Entity.spawnTickCounter == 320) {

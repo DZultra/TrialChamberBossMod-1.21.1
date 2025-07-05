@@ -1,7 +1,10 @@
-package net.dzultra.block;
+package net.dzultra.block.SpawnPillarBlock;
 
 
 import com.mojang.serialization.MapCodec;
+import net.dzultra.block.BossSpawnPillarBlock;
+import net.dzultra.block.BossSpawnPillarBlockEntity;
+import net.dzultra.block.ModBlockEntities;
 import net.dzultra.item.ModItems;
 import net.dzultra.networking.SyncTCBSpawnPillarBlockEntityS2CPayload;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -27,23 +30,23 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntityProvider {
+public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProvider {
     public static final BooleanProperty ACTIVATED = BooleanProperty.of("activated");
-    public static final BooleanProperty HAS_STARTED_SPAWNED = BooleanProperty.of("has_started_spawn");
+    public static final BooleanProperty RUNNING_LOGIC = BooleanProperty.of("running_logic");
     public static final BooleanProperty LOCKED = BooleanProperty.of("locked");
-    public static final MapCodec<BossSpawnPillarBlock> CODEC = BossSpawnPillarBlock.createCodec(BossSpawnPillarBlock::new);
+    public static final MapCodec<SpawnPillarBlock> CODEC = SpawnPillarBlock.createCodec(SpawnPillarBlock::new);
 
-    public BossSpawnPillarBlock(Settings settings) {
+    public SpawnPillarBlock(Settings settings) {
         super(settings);
         setDefaultState(this.getDefaultState().with(ACTIVATED, false));
-        setDefaultState(this.getDefaultState().with(HAS_STARTED_SPAWNED, false));
+        setDefaultState(this.getDefaultState().with(RUNNING_LOGIC, false));
         setDefaultState(this.getDefaultState().with(LOCKED, false));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(ACTIVATED);
-        builder.add(HAS_STARTED_SPAWNED);
+        builder.add(RUNNING_LOGIC);
         builder.add(LOCKED);
     }
 
@@ -55,7 +58,7 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new BossSpawnPillarBlockEntity(pos, state);
+        return new SpawnPillarBlockEntity(pos, state);
     }
 
     @Override
@@ -67,12 +70,8 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
     protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof BossSpawnPillarBlockEntity bossSpawnPillarBlockEntity) {
-                if (bossSpawnPillarBlockEntity.executingLogic) {
-                    BossSpawnAnimation.resetSpawnPillars(world, pos);
-                }
-
-                ItemScatterer.spawn(world, pos, bossSpawnPillarBlockEntity);
+            if (blockEntity instanceof SpawnPillarBlockEntity spawnPillarBlockEntity) {
+                ItemScatterer.spawn(world, pos, spawnPillarBlockEntity);
                 world.updateComparators(pos, this);
             }
             super.onStateReplaced(state, world, pos, newState, moved);
@@ -89,11 +88,11 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos,
                                              PlayerEntity player, Hand hand, BlockHitResult hit) {
 
-        if (!(world.getBlockEntity(pos) instanceof BossSpawnPillarBlockEntity bossSpawnPillarBlockEntity)) {
+        if (!(world.getBlockEntity(pos) instanceof SpawnPillarBlockEntity spawnPillarBlockEntity)) {
             return ItemActionResult.FAIL;
         }
 
-        if(state == world.getBlockState(pos).with(BossSpawnPillarBlock.LOCKED, true)) {
+        if(state == world.getBlockState(pos).with(SpawnPillarBlock.LOCKED, true)) {
             return ItemActionResult.CONSUME;
         }
 
@@ -101,61 +100,58 @@ public class BossSpawnPillarBlock extends BlockWithEntity implements BlockEntity
             return ItemActionResult.CONSUME;
         }
 
-        if (bossSpawnPillarBlockEntity.isEmpty() && !stack.isEmpty()) {
+        if (spawnPillarBlockEntity.isEmpty() && !stack.isEmpty()) {
             // Block Empty & Hand has Item -> Item from Hand into Block
-            bossSpawnPillarBlockEntity.setStack(0, stack.copyWithCount(1)); // Item from Hand onto Block
+            spawnPillarBlockEntity.setStack(0, stack.copyWithCount(1)); // Item from Hand onto Block
             stack.decrement(1); // Remove Item from the Hand
-            world.setBlockState(pos, state.with(BossSpawnPillarBlock.ACTIVATED, true)); // Activate Block
+            world.setBlockState(pos, state.with(SpawnPillarBlock.ACTIVATED, true)); // Activate Block
 
             world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 2f);
 
-            syncAndMarkBlock(world, bossSpawnPillarBlockEntity, pos, state);
+            syncAndMarkBlock(world, spawnPillarBlockEntity, pos, state);
         }
 
-        else if (!bossSpawnPillarBlockEntity.isEmpty() && stack.isEmpty() && !player.isSneaking()) {
+        else if (!spawnPillarBlockEntity.isEmpty() && stack.isEmpty() && !player.isSneaking()) {
             // Block has Item & Hand Empty -> Item from Block into Hand
-            ItemStack stackOnSpawnPillar = bossSpawnPillarBlockEntity.getItems().getFirst(); // Item on Block
+            ItemStack stackOnSpawnPillar = spawnPillarBlockEntity.getItems().getFirst(); // Item on Block
             player.setStackInHand(Hand.MAIN_HAND, stackOnSpawnPillar); // Give Item on Block to Player
-            bossSpawnPillarBlockEntity.setStack(0, ItemStack.EMPTY); // Clear Item on Block
-            world.setBlockState(pos, state.with(BossSpawnPillarBlock.ACTIVATED, false)); // DeActivate Block
+            spawnPillarBlockEntity.setStack(0, ItemStack.EMPTY); // Clear Item on Block
+            world.setBlockState(pos, state.with(SpawnPillarBlock.ACTIVATED, false)); // DeActivate Block
 
             world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 1f);
 
-            syncAndMarkBlock(world, bossSpawnPillarBlockEntity, pos, state);
+            syncAndMarkBlock(world, spawnPillarBlockEntity, pos, state);
         }
 
-        else if (bossSpawnPillarBlockEntity.isEmpty() && stack.isEmpty()) {
+        else if (spawnPillarBlockEntity.isEmpty() && stack.isEmpty()) {
             // Block Empty & Hand Empty -> Do nothing
-            world.setBlockState(pos, state.with(BossSpawnPillarBlock.ACTIVATED, false));
-            bossSpawnPillarBlockEntity.syncInventory();
             return ItemActionResult.CONSUME;
         }
 
-        else if (!bossSpawnPillarBlockEntity.isEmpty() && !stack.isEmpty()) {
+        else if (!spawnPillarBlockEntity.isEmpty() && !stack.isEmpty()) {
             // Block has Item & Hand has Item -> If same ItemStack increment Stack in Hand, if not same ItemStack do nth
-            if (stack.isOf(bossSpawnPillarBlockEntity.getStack(0).getItem()) && stack.getCount() < stack.getMaxCount()) {
+            if (stack.isOf(spawnPillarBlockEntity.getStack(0).getItem()) && stack.getCount() < stack.getMaxCount()) {
+                spawnPillarBlockEntity.setStack(0, ItemStack.EMPTY); // Clear Block
+                stack.increment(1); // Give Item to Hand
+                world.setBlockState(pos, state.with(SpawnPillarBlock.ACTIVATED, false)); // DeActivate Block
+
                 world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 2f);
-                bossSpawnPillarBlockEntity.setStack(0, ItemStack.EMPTY);
-                stack.increment(1);
-                world.setBlockState(pos, state.with(BossSpawnPillarBlock.ACTIVATED, false));
-                bossSpawnPillarBlockEntity.markDirty();
-                bossSpawnPillarBlockEntity.syncInventory();
-                world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
+
+                syncAndMarkBlock(world, spawnPillarBlockEntity, pos, state);
             } else {
-                // Do nothing but don't place block
-                return ItemActionResult.CONSUME;
+                return ItemActionResult.CONSUME; // Do nothing but don't place block
             }
         }
         return ItemActionResult.SUCCESS;
     }
 
-    private static void syncAndMarkBlock(World world, BossSpawnPillarBlockEntity entity, BlockPos pos, BlockState state) {
+    private static void syncAndMarkBlock(World world, SpawnPillarBlockEntity entity, BlockPos pos, BlockState state) {
         entity.markDirty();
         entity.syncInventory();
         world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
     }
 
-    public static void sendSyncPacket(World world, BlockPos blockpos, DefaultedList<ItemStack> inventory) {
+    public static void sendSyncPacket(  World world, BlockPos blockpos, DefaultedList<ItemStack> inventory) {
         if (world.isClient()) return;
         SyncTCBSpawnPillarBlockEntityS2CPayload payload = new SyncTCBSpawnPillarBlockEntityS2CPayload(blockpos, inventory);
 

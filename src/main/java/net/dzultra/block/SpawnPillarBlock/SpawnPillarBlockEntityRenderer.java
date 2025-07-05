@@ -1,4 +1,4 @@
-package net.dzultra.block;
+package net.dzultra.block.SpawnPillarBlock;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -19,24 +19,23 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
-public class BossSpawnPillarBlockEntityRenderer implements BlockEntityRenderer<BossSpawnPillarBlockEntity> {
+public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<SpawnPillarBlockEntity> {
     private static final Identifier BEAM_TEXTURE = Identifier.ofVanilla("textures/entity/end_gateway_beam.png");
 
-    public BossSpawnPillarBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+    public SpawnPillarBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 
     }
 
     @Override
-    public void render(BossSpawnPillarBlockEntity entity, float tickDelta, MatrixStack matrices,
+    public void render(SpawnPillarBlockEntity entity, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        if (BossSpawnAnimation.shouldRenderBeams) {
+        if (SpawnAnimation.shouldRenderBeams) {
             renderAllBeams(matrices, vertexConsumers, entity, tickDelta);
         }
-
         renderItemAboveBlock(matrices, vertexConsumers, entity);
     }
 
-    private void renderItemAboveBlock(MatrixStack matrices, VertexConsumerProvider vertexConsumers, BossSpawnPillarBlockEntity entity) {
+    private void renderItemAboveBlock(MatrixStack matrices, VertexConsumerProvider vertexConsumers, SpawnPillarBlockEntity entity) {
         ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
         ItemStack stack = entity.getStack(0);
         BlockPos entity_pos = entity.getPos();
@@ -50,7 +49,7 @@ public class BossSpawnPillarBlockEntityRenderer implements BlockEntityRenderer<B
         matrices.pop();
     }
 
-    private void renderAllBeams(MatrixStack matrices, VertexConsumerProvider vertexConsumers, BossSpawnPillarBlockEntity entity, float tickDelta){
+    private void renderAllBeams(MatrixStack matrices, VertexConsumerProvider vertexConsumers, SpawnPillarBlockEntity entity, float tickDelta){
         matrices.translate(0f, 0f, 0f); // Position
         renderSingleBeam(matrices, vertexConsumers, tickDelta, entity, entity.getPos());
 

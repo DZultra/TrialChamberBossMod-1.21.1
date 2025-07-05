@@ -18,6 +18,13 @@ public class ModBlocks {
             )
     );
 
+    public static final Block SPAWN_PILLAR = registerBlock("spawn_pillar",
+            new BossSpawnPillarBlock(AbstractBlock.Settings.create()
+                    .nonOpaque()
+                    .strength(-1.0F, 3600000.0F)
+            )
+    );
+
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);
         return Registry.register(Registries.BLOCK, Identifier.of(TrialChamberBossMod.MOD_ID, name), block);
@@ -26,9 +33,5 @@ public class ModBlocks {
     private static void registerBlockItem(String name, Block block) {
         Registry.register(Registries.ITEM, Identifier.of(TrialChamberBossMod.MOD_ID, name),
                 new BlockItem(block, new Item.Settings()));
-    }
-
-    public static void registerModBlocks() {
-        TrialChamberBossMod.LOGGER.info("Registering Mod Blocks for " + TrialChamberBossMod.MOD_ID);
     }
 }

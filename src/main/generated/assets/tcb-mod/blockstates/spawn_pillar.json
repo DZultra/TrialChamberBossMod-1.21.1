@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "tcb-mod:block/spawn_pillar"
+    }
+  }
+}
