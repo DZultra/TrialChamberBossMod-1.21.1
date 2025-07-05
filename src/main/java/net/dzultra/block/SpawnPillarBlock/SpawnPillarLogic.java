@@ -1,13 +1,16 @@
 package net.dzultra.block.SpawnPillarBlock;
 
 import net.dzultra.TrialChamberBossMod;
-import net.dzultra.block.BossSpawnPillarBlock;
 import net.dzultra.block.ModBlocks;
 import net.minecraft.block.BlockState;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -20,7 +23,7 @@ public class SpawnPillarLogic {
         if (!(world.getBlockEntity(pos) instanceof SpawnPillarBlockEntity spawnPillarBlockEntity)) return;
 
         // SpawnParticles for better display of the Item on the SpawnPillar
-        if (!spawnPillarBlockEntity.isEmpty() && !world.isClient()) {
+        if ((state.get(SpawnPillarBlock.ACTIVATED)) && !world.isClient()) {
             spawnParticleAbovePillar((ServerWorld) world, pos);
         }
 
@@ -117,20 +120,28 @@ public class SpawnPillarLogic {
         // Server Side
 
         particleTickCounter++;
-        if (particleTickCounter >= 8) { // This is run every 8 Ticks
+        if (particleTickCounter >= 8) { // This is runs every 8 Ticks
             double velocityX = ThreadLocalRandom.current().nextDouble(-0.02, 0.02);
-            double velocityY = ThreadLocalRandom.current().nextDouble(0, 0.02);
+            double velocityY = ThreadLocalRandom.current().nextDouble(0.01, 0.03);
             double velocityZ = ThreadLocalRandom.current().nextDouble(-0.02, 0.02);
 
+            Vec3d actualPos = pos.toCenterPos().offset(Direction.UP, 0.8);
             // Server Side spawned Particle
-            world.spawnParticles(ParticleTypes.END_ROD,
-                    pos.getX(), pos.getY(), pos.getZ(), // pos
-                    1, // count
-                    velocityX, velocityY, velocityZ, // velocity
-                    1 // speed
-            );
+            spawnParticle(world, ParticleTypes.END_ROD, actualPos, new Vec3d(velocityX, velocityY, velocityZ), 1, 0.015);
 
             particleTickCounter = 0; // Reset Particle Counter to begin the 8 Tick counting again
         }
+    }
+
+    private static <T extends ParticleEffect> void spawnParticle (ServerWorld world, T p, Vec3d pos, Vec3d velocity, int amount, double speed) {
+        world.spawnParticles(p,
+                pos.getX(),
+                pos.getY(),
+                pos.getZ(),
+                amount,
+                velocity.getX(),
+                velocity.getY(),
+                velocity.getZ(),
+                speed);
     }
 }

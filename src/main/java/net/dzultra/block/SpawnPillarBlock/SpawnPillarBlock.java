@@ -2,8 +2,6 @@ package net.dzultra.block.SpawnPillarBlock;
 
 
 import com.mojang.serialization.MapCodec;
-import net.dzultra.block.BossSpawnPillarBlock;
-import net.dzultra.block.BossSpawnPillarBlockEntity;
 import net.dzultra.block.ModBlockEntities;
 import net.dzultra.item.ModItems;
 import net.dzultra.networking.SyncTCBSpawnPillarBlockEntityS2CPayload;
@@ -92,7 +90,7 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
             return ItemActionResult.FAIL;
         }
 
-        if(state == world.getBlockState(pos).with(SpawnPillarBlock.LOCKED, true)) {
+        if(state.get(SpawnPillarBlock.LOCKED)) {
             return ItemActionResult.CONSUME;
         }
 

@@ -1,7 +1,5 @@
 package net.dzultra;
 
-import net.dzultra.block.BossSpawnPillarBlockEntity;
-import net.dzultra.block.BossSpawnPillarBlockEntityRenderer;
 import net.dzultra.block.ModBlockEntities;
 import net.dzultra.block.SpawnPillarBlock.SpawnPillarBlockEntity;
 import net.dzultra.block.SpawnPillarBlock.SpawnPillarBlockEntityRenderer;

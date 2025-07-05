@@ -1,6 +1,7 @@
 package net.dzultra.block;
 
 import net.dzultra.TrialChamberBossMod;
+import net.dzultra.block.SpawnPillarBlock.SpawnPillarBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
@@ -11,15 +12,16 @@ import net.minecraft.util.Identifier;
 
 public class ModBlocks {
 
+    /*
     public static final Block BOSS_SPAWN_PILLAR = registerBlock("boss_spawn_pillar",
             new BossSpawnPillarBlock(AbstractBlock.Settings.create()
                     .nonOpaque()
                     .strength(-1.0F, 3600000.0F)
             )
     );
-
+    */
     public static final Block SPAWN_PILLAR = registerBlock("spawn_pillar",
-            new BossSpawnPillarBlock(AbstractBlock.Settings.create()
+            new SpawnPillarBlock(AbstractBlock.Settings.create()
                     .nonOpaque()
                     .strength(-1.0F, 3600000.0F)
             )

@@ -21,89 +21,12 @@ import net.minecraft.world.World;
 import java.util.*;
 
 public class BossSpawnAnimation {
+    /*
     protected static final int maxSpawnTickTime = 400;
     protected static boolean shouldRenderBeams = false;
     // This function is only executed on the main BossSpawnPillarEntity which all the Spawning Logic executes
     // And we are fully Server Side
     // spawnTickCounter counts upwards 1 per Tick after the Spawning has begun
-    protected static void tickBossSpawnAnimation(World world, BlockState state, BossSpawnPillarBlockEntity block0Entity, BlockPos pos) {
-        block0Entity.spawnTickCounter++;
-        //TrialChamberBossMod.LOGGER.info("[TCB] SpawnTickCounter: " + spawnTickCounter);
-
-        if(!shouldContinueSpawning(world, block0Entity)) {
-            resetSpawnPillars(world, pos);
-            return;
-        }
-
-        // Particle Rays: 4s-9s
-        if (block0Entity.spawnTickCounter >= 80 && block0Entity.spawnTickCounter <= 500) {
-            if (world instanceof ServerWorld serverWorld) {
-                spawnParticleRays(serverWorld, pos, block0Entity.spawnTickCounter);
-            }
-        }
-        // Beam: 10s-15s (Inside BlockEntityRenderer)
-        // Item Travel 10s-15s
-        if (block0Entity.spawnTickCounter >= 200 && block0Entity.spawnTickCounter <= 300) {
-            shouldRenderBeams = true;
-        }
-
-        if (block0Entity.spawnTickCounter == 320) {
-
-            BlockPos block0Pos = block0Entity.getPos();
-            BlockPos block1Pos = block0Pos.add(3, 0, 0);
-            BlockPos block2Pos = block0Pos.add(0, 0, 3);
-            BlockPos block3Pos = block0Pos.add(3, 0, 3);
-
-            BlockEntity block1Entity = world.getBlockEntity(block1Pos);
-            BlockEntity block2Entity = world.getBlockEntity(block2Pos);
-            BlockEntity block3Entity = world.getBlockEntity(block3Pos);
-
-            BossSpawnPillarBlockEntity.setBlockState(world, block0Pos, BossSpawnPillarBlock.ACTIVATED, false);
-            BossSpawnPillarBlockEntity.setBlockState(world, block1Pos, BossSpawnPillarBlock.ACTIVATED, false);
-            BossSpawnPillarBlockEntity.setBlockState(world, block2Pos, BossSpawnPillarBlock.ACTIVATED, false);
-            BossSpawnPillarBlockEntity.setBlockState(world, block3Pos, BossSpawnPillarBlock.ACTIVATED, false);
-
-            block0Entity.setStack(0, ItemStack.EMPTY);
-            block0Entity.markDirty();
-            block0Entity.syncInventory();
-
-            if (block1Entity instanceof BossSpawnPillarBlockEntity bossSpawnPillarBlockEntity1) {
-                bossSpawnPillarBlockEntity1.setStack(0, ItemStack.EMPTY);
-                bossSpawnPillarBlockEntity1.markDirty();
-                bossSpawnPillarBlockEntity1.syncInventory();
-            }
-            if (block2Entity instanceof BossSpawnPillarBlockEntity bossSpawnPillarBlockEntity2) {
-                bossSpawnPillarBlockEntity2.setStack(0, ItemStack.EMPTY);
-                bossSpawnPillarBlockEntity2.markDirty();
-                bossSpawnPillarBlockEntity2.syncInventory();
-            }
-            if (block3Entity instanceof BossSpawnPillarBlockEntity bossSpawnPillarBlockEntity3) {
-                bossSpawnPillarBlockEntity3.setStack(0, ItemStack.EMPTY);
-                bossSpawnPillarBlockEntity3.markDirty();
-                bossSpawnPillarBlockEntity3.syncInventory();
-            }
-            spawnBossEntity(block0Entity.getPos(), world);
-        }
-
-        // I hate myself
-        BlockPos pos1 = pos.add(3, 0 ,3);
-        BlockPos pos2 = pos.add(3, 0 ,0);
-        BlockPos pos3 = pos.add(0, 0 ,3);
-        List<BlockPos> additionalBlocks = List.of(pos.add(0,-1,-2), pos.add(0,0,-2), pos.add(0,-1,-3), pos.add(0,0,-3), pos.add(-2,-2,0), pos.add(-2,-1,0), pos.add(-3,-2,0), pos.add(-3,-1,0), pos1.add(0,-1,2), pos1.add(0,0,2), pos1.add(0,-1,3), pos1.add(0,0,3), pos1.add(2,-2,0), pos1.add(2,-1,0), pos1.add(3,-2,0), pos1.add(3,-1,0), pos2.add(2,-1,0), pos2.add(2,0,0), pos2.add(3,-1,0), pos2.add(3,0,0), pos2.add(0,-2,-2), pos2.add(0,-1,-2), pos2.add(0,-2,-3), pos2.add(0,-1,-3), pos3.add(-2,-1,0), pos3.add(-2,0,0), pos3.add(-3,-1,0), pos3.add(-3,0,0), pos3.add(0,-2,2), pos3.add(0,-1,2), pos3.add(0,-2,3), pos3.add(0,-1,3));
-        // Finally done with this shit
-        if (block0Entity.spawnTickCounter == 340) {
-            shiftAreaDownByOne(world, block0Entity.getPos().add(1, 0, 1), additionalBlocks);
-        }
-        if (block0Entity.spawnTickCounter == 360) {
-            shiftAreaDownByOne(world, block0Entity.getPos().add(1, 0, 1), additionalBlocks);
-        }
-
-        if(block0Entity.spawnTickCounter == maxSpawnTickTime) {
-            BossSpawnPillarBlockEntity.setBlockState(world, block0Entity.getPos(), BossSpawnPillarBlock.HAS_STARTED_SPAWNED, false);
-            block0Entity.spawnTickCounter = 0;
-            block0Entity.executingLogic = false;
-        }
-    }
 
     private static void spawnParticleRays(ServerWorld world, BlockPos pos0, Integer spawnTickCounter) {
         Position pos = new Position() {
@@ -335,4 +258,6 @@ public class BossSpawnAnimation {
         creeper.refreshPositionAndAngles(Vec3d.of(spawnPos), 360F, 0);
         world.spawnEntity(creeper);
     }
+
+     */
 }

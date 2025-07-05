@@ -28,7 +28,7 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
 
     // -- Logic --
     public void tick(World world, BlockPos pos, BlockState state) {
-        //SpawnPillarLogic.tick(world, pos, state); // Execute Tick Function in Logic Class
+        SpawnPillarLogic.tick(world, pos, state); // Execute Tick Function in Logic Class
     }
 
     // -- Helper Functions --
