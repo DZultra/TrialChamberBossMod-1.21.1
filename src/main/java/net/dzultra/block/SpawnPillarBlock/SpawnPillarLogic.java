@@ -16,21 +16,23 @@ import net.minecraft.world.World;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SpawnPillarLogic {
-    private static int particleTickCounter = 0; // TickCounter for Particle Spawning above Block when it is Activated
 
     // Tick Function from SpawnPillarBlock, just in a separate class
-    protected static void tick(World world, BlockPos pos, BlockState state) { // Executed on Client & Server Side
+    protected static void tick(World world, BlockPos pos, BlockState state) {
+        // Client & Server Side
         if (!(world.getBlockEntity(pos) instanceof SpawnPillarBlockEntity spawnPillarBlockEntity)) return;
 
         // SpawnParticles for better display of the Item on the SpawnPillar
-        if ((state.get(SpawnPillarBlock.ACTIVATED)) && !world.isClient()) {
-            spawnParticleAbovePillar((ServerWorld) world, pos);
+        if ((state.get(SpawnPillarBlock.ACTIVATED))) {
+            if (world.isClient()) {
+                spawnParticleAbovePillar(world, spawnPillarBlockEntity);
+            }
         }
 
         // Once the startBossSpawn() was executed the BlockState "running_logic" is set true
         // This starts the SpawnAnimation
         if (state.get(SpawnPillarBlock.RUNNING_LOGIC) && !world.isClient()) { //
-            SpawnAnimation.tickBossSpawnAnimation(world, state, spawnPillarBlockEntity, spawnPillarBlockEntity.getPos());
+            SpawnAnimation.tickBossSpawnAnimation(world, state, spawnPillarBlockEntity, pos);
         }
 
         // Check whether the Boss Spawning should start and do so if it should
@@ -65,21 +67,20 @@ public class SpawnPillarLogic {
         }
 
         // Did the spawning already begin? If so, don't start spawning again
-        if(state == isBlockState(world, block0Pos, SpawnPillarBlock.RUNNING_LOGIC, true)) {
+        if(state.get(SpawnPillarBlock.RUNNING_LOGIC)) {
             //TrialChamberBossMod.LOGGER.info("[TCB] hasStartedSpawning: " + bossSpawnPillarBlockEntity.pos);
             return false;
         }
 
         // Are the Spawn Pillars ACTIVATED aka have a Spawn Shard on them? If so, continue and return true
-        if((block0 == isBlockState(world, block0Pos, SpawnPillarBlock.ACTIVATED, false))
-                || (block1 == isBlockState(world, block1Pos, SpawnPillarBlock.ACTIVATED, false))
-                || (block2 == isBlockState(world, block2Pos, SpawnPillarBlock.ACTIVATED, false))
-                || (block3 == isBlockState(world, block3Pos, SpawnPillarBlock.ACTIVATED, false))
+        if (!(block0.get(SpawnPillarBlock.ACTIVATED)
+                        && block1.get(SpawnPillarBlock.ACTIVATED)
+                        && block2.get(SpawnPillarBlock.ACTIVATED)
+                        && block3.get(SpawnPillarBlock.ACTIVATED))
         ) {
             //TrialChamberBossMod.LOGGER.info("[TCB] Required Blocks aren't activated: " + bossSpawnPillarBlockEntity.pos);
             return false;
         }
-
         return true;
     }
 
@@ -108,28 +109,21 @@ public class SpawnPillarLogic {
         world.setBlockState(pos, world.getBlockState(pos).with(property, b));
     }
 
-    protected static BlockState isBlockState(World world, BlockPos pos, Property<Boolean> property, boolean b) {
-        if(!(world.getBlockEntity(pos) instanceof SpawnPillarBlockEntity)) {
-            return null;
-        }
-        return world.getBlockState(pos).with(property, b);
-    }
-
     // Spawns Particles above the Pillar to make Item display better
-    protected static void spawnParticleAbovePillar(ServerWorld world, BlockPos pos) {
-        // Server Side
-
-        particleTickCounter++;
-        if (particleTickCounter >= 8) { // This is runs every 8 Ticks
+    protected static void spawnParticleAbovePillar(World world, SpawnPillarBlockEntity blockEntity) {
+        int counter = blockEntity.getAndIncrementParticleCounter();
+        if (counter >= 8) {
             double velocityX = ThreadLocalRandom.current().nextDouble(-0.02, 0.02);
-            double velocityY = ThreadLocalRandom.current().nextDouble(0.01, 0.03);
+            double velocityY = ThreadLocalRandom.current().nextDouble(0, 0.02);
             double velocityZ = ThreadLocalRandom.current().nextDouble(-0.02, 0.02);
 
-            Vec3d actualPos = pos.toCenterPos().offset(Direction.UP, 0.8);
-            // Server Side spawned Particle
-            spawnParticle(world, ParticleTypes.END_ROD, actualPos, new Vec3d(velocityX, velocityY, velocityZ), 1, 0.015);
-
-            particleTickCounter = 0; // Reset Particle Counter to begin the 8 Tick counting again
+            BlockPos pos = blockEntity.getPos();
+            world.addParticle(ParticleTypes.END_ROD,
+                    pos.getX() + 0.5,
+                    pos.getY() + 1.5,
+                    pos.getZ() + 0.5,
+                    velocityX, velocityY, velocityZ);
+            blockEntity.resetParticleCounter();
         }
     }
 

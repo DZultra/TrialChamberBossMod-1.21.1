@@ -20,7 +20,8 @@ import org.jetbrains.annotations.Nullable;
 public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private float rotation = 0;
-    protected static int spawnTickCounter = 0;
+    private  int spawnTickCounter = 0; // TickCounter for Counting Ticks after Boss Spawning started
+    private int particleTickCounter = 0; // TickCounter for Particle Spawning above Block when it is Activated
 
     public SpawnPillarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SPAWN_PILLAR_BE, pos, state);
@@ -39,6 +40,22 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
             rotation = 0;
         }
         return rotation;
+    }
+
+    public int getAndIncrementParticleCounter() {
+        return particleTickCounter++;
+    }
+
+    public void resetParticleCounter() {
+        particleTickCounter = 0;
+    }
+
+    public int getAndIncrementSpawnTickCounter() {
+        return spawnTickCounter++;
+    }
+
+    public void resetSpawnTickCounter() {
+        spawnTickCounter = 0;
     }
 
     @Override

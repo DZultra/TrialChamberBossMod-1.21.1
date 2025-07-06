@@ -9,6 +9,7 @@ public class SpawnAnimation {
 
     protected static void tickBossSpawnAnimation(World world, BlockState state, SpawnPillarBlockEntity spawnPillarBlockEntity, BlockPos pos) {
         // Server Side
-        SpawnPillarBlockEntity.spawnTickCounter++;
+        int spawnTickCounter = spawnPillarBlockEntity.getAndIncrementSpawnTickCounter();
+
     }
 }
