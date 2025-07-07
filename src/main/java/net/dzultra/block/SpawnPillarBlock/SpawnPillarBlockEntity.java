@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private float rotation = 0;
-    private  int spawnTickCounter = 0; // TickCounter for Counting Ticks after Boss Spawning started
+    private int spawnTickCounter = 0; // TickCounter for Counting Ticks after Boss Spawning started
     private int particleTickCounter = 0; // TickCounter for Particle Spawning above Block when it is Activated
 
     public SpawnPillarBlockEntity(BlockPos pos, BlockState state) {
@@ -43,19 +43,23 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
     }
 
     public int getAndIncrementParticleCounter() {
+        this.markDirty();
         return particleTickCounter++;
     }
 
     public void resetParticleCounter() {
         particleTickCounter = 0;
+        this.markDirty();
     }
 
     public int getAndIncrementSpawnTickCounter() {
+        this.markDirty();
         return spawnTickCounter++;
     }
 
     public void resetSpawnTickCounter() {
         spawnTickCounter = 0;
+        this.markDirty();
     }
 
     @Override
@@ -68,6 +72,7 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         super.writeNbt(nbt, registryLookup);
         Inventories.writeNbt(nbt, inventory, registryLookup);
         nbt.putInt("spawnTickCounter", spawnTickCounter);
+        nbt.putInt("particleTickCounter", particleTickCounter);
     }
 
     @Override
@@ -75,6 +80,7 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         super.readNbt(nbt, registryLookup);
         Inventories.readNbt(nbt, inventory, registryLookup);
         spawnTickCounter = nbt.getInt("spawnTickCounter");
+        particleTickCounter = nbt.getInt("particleTickCounter");
     }
 
     @Override

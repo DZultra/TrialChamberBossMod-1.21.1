@@ -1,5 +1,6 @@
 package net.dzultra.block.SpawnPillarBlock;
 
+import net.dzultra.TrialChamberBossMod;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -29,10 +30,10 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
     @Override
     public void render(SpawnPillarBlockEntity entity, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        if (SpawnAnimation.shouldRenderBeams) {
+        renderItemAboveBlock(matrices, vertexConsumers, entity);
+        if (entity.getCachedState().get(SpawnPillarBlock.SHOULD_RENDER_BEAM)) {
             renderAllBeams(matrices, vertexConsumers, entity, tickDelta);
         }
-        renderItemAboveBlock(matrices, vertexConsumers, entity);
     }
 
     private void renderItemAboveBlock(MatrixStack matrices, VertexConsumerProvider vertexConsumers, SpawnPillarBlockEntity entity) {
@@ -50,6 +51,7 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
     }
 
     private void renderAllBeams(MatrixStack matrices, VertexConsumerProvider vertexConsumers, SpawnPillarBlockEntity entity, float tickDelta){
+        matrices.push();
         matrices.translate(0f, 0f, 0f); // Position
         renderSingleBeam(matrices, vertexConsumers, tickDelta, entity, entity.getPos());
 
@@ -61,15 +63,18 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
 
         matrices.translate(-3f, 0f, 0f); // Position
         renderSingleBeam(matrices, vertexConsumers, tickDelta, entity, entity.getPos().add(0, 0, 3));
+        matrices.pop();
     }
 
     private void renderSingleBeam(MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickDelta, BlockEntity entity, BlockPos pos) {
+        int maxY = getFirstNonAirBlockAboveY(pos, entity.getWorld());
+        TrialChamberBossMod.LOGGER.info("Beam maxY: " + maxY); // Debug log
         BeaconBlockEntityRenderer.renderBeam(
                 matrices, vertexConsumers, BEAM_TEXTURE, tickDelta,
                 1, // Height Scale
                 entity.getWorld().getTime(),
                 0, // YOffset
-                getFirstNonAirBlockAboveY(pos, entity.getWorld()), // maxY
+                maxY,
                 DyeColor.ORANGE.getEntityColor(),
                 0.15F, // Inner Radius
                 0F // Outer Radius

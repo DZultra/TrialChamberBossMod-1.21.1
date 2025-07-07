@@ -32,6 +32,7 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
     public static final BooleanProperty ACTIVATED = BooleanProperty.of("activated");
     public static final BooleanProperty RUNNING_LOGIC = BooleanProperty.of("running_logic");
     public static final BooleanProperty LOCKED = BooleanProperty.of("locked");
+    public static final BooleanProperty SHOULD_RENDER_BEAM = BooleanProperty.of("should_render_beam");
     public static final MapCodec<SpawnPillarBlock> CODEC = SpawnPillarBlock.createCodec(SpawnPillarBlock::new);
 
     public SpawnPillarBlock(Settings settings) {
@@ -39,6 +40,7 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
         setDefaultState(this.getDefaultState().with(ACTIVATED, false));
         setDefaultState(this.getDefaultState().with(RUNNING_LOGIC, false));
         setDefaultState(this.getDefaultState().with(LOCKED, false));
+        setDefaultState(this.getDefaultState().with(SHOULD_RENDER_BEAM, false));
     }
 
     @Override
@@ -46,6 +48,7 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
         builder.add(ACTIVATED);
         builder.add(RUNNING_LOGIC);
         builder.add(LOCKED);
+        builder.add(SHOULD_RENDER_BEAM);
     }
 
     @Override
@@ -143,7 +146,7 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
         return ItemActionResult.SUCCESS;
     }
 
-    private static void syncAndMarkBlock(World world, SpawnPillarBlockEntity entity, BlockPos pos, BlockState state) {
+    protected static void syncAndMarkBlock(World world, SpawnPillarBlockEntity entity, BlockPos pos, BlockState state) {
         entity.markDirty();
         entity.syncInventory();
         world.updateListeners(pos, state, state, Block.NOTIFY_ALL);

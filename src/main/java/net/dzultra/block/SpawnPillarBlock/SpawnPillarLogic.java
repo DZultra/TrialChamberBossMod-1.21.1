@@ -2,6 +2,8 @@ package net.dzultra.block.SpawnPillarBlock;
 
 import net.dzultra.TrialChamberBossMod;
 import net.dzultra.block.ModBlocks;
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
@@ -24,15 +26,15 @@ public class SpawnPillarLogic {
 
         // SpawnParticles for better display of the Item on the SpawnPillar
         if ((state.get(SpawnPillarBlock.ACTIVATED))) {
-            if (world.isClient()) {
-                spawnParticleAbovePillar(world, spawnPillarBlockEntity);
+            if (!world.isClient()) {
+                spawnParticleAbovePillar(((ServerWorld) world), spawnPillarBlockEntity);
             }
         }
 
         // Once the startBossSpawn() was executed the BlockState "running_logic" is set true
         // This starts the SpawnAnimation
         if (state.get(SpawnPillarBlock.RUNNING_LOGIC) && !world.isClient()) { //
-            SpawnAnimation.tickBossSpawnAnimation(world, state, spawnPillarBlockEntity, pos);
+            SpawnAnimation.tickBossSpawnAnimation(((ServerWorld) world), state, spawnPillarBlockEntity, pos);
         }
 
         // Check whether the Boss Spawning should start and do so if it should
@@ -102,6 +104,11 @@ public class SpawnPillarLogic {
         // We are starting the Boss Spawning Process, so the block is running the Logic.
         // Only applies to one of the 4 Pillars, because only one passes the shouldStartBossSpawn()
         setBlockState(world, block0Pos, SpawnPillarBlock.RUNNING_LOGIC, true);
+
+        for (BlockPos pos : new BlockPos[]{block0Pos, block1Pos, block2Pos, block3Pos}) {
+            BlockState state = world.getBlockState(pos);
+            world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
+        }
     }
 
     // -- Helper Functions --
@@ -110,19 +117,20 @@ public class SpawnPillarLogic {
     }
 
     // Spawns Particles above the Pillar to make Item display better
-    protected static void spawnParticleAbovePillar(World world, SpawnPillarBlockEntity blockEntity) {
+    protected static void spawnParticleAbovePillar(ServerWorld world, SpawnPillarBlockEntity blockEntity) {
         int counter = blockEntity.getAndIncrementParticleCounter();
         if (counter >= 8) {
+            BlockPos pos = blockEntity.getPos();
+
             double velocityX = ThreadLocalRandom.current().nextDouble(-0.02, 0.02);
             double velocityY = ThreadLocalRandom.current().nextDouble(0, 0.02);
             double velocityZ = ThreadLocalRandom.current().nextDouble(-0.02, 0.02);
 
-            BlockPos pos = blockEntity.getPos();
-            world.addParticle(ParticleTypes.END_ROD,
-                    pos.getX() + 0.5,
-                    pos.getY() + 1.5,
-                    pos.getZ() + 0.5,
-                    velocityX, velocityY, velocityZ);
+            Vec3d velocity = new Vec3d(velocityX, velocityY, velocityZ);
+            Vec3d position =  new Vec3d(pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5);
+
+
+            spawnParticle(world, ParticleTypes.END_ROD, position, velocity, 1, 0.015);
             blockEntity.resetParticleCounter();
         }
     }
