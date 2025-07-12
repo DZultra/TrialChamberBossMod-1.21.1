@@ -50,6 +50,14 @@ public class SpawnAnimation {
                         () -> trySetBlockState(world, pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, false)
                 ),
                 new TickAction(
+                        tick -> tick == 215,
+                        () -> PedestalDownShiftingLogic.shiftPedestalDown(world, spawnPillarBlockEntity)
+                ),
+                new TickAction(
+                        tick -> tick == 235,
+                        () -> PedestalDownShiftingLogic.shiftPedestalDown(world, spawnPillarBlockEntity)
+                ),
+                new TickAction(
                         tick -> tick == maxSpawnTickCounter,
                         () -> {
                             spawnPillarBlockEntity.resetSpawnTickCounter();

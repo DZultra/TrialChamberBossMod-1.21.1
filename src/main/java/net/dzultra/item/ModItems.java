@@ -21,8 +21,6 @@ public class ModItems {
         return Registry.register(Registries.ITEM, Identifier.of(TrialChamberBossMod.MOD_ID, name), item);
     }
 
-    public static void registerModItems() {
-
-    }
+    public static void registerModItems() {}
 }
 

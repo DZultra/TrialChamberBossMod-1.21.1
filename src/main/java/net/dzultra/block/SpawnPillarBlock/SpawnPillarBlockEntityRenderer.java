@@ -68,7 +68,6 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
 
     private void renderSingleBeam(MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickDelta, BlockEntity entity, BlockPos pos) {
         int maxY = getFirstNonAirBlockAboveY(pos, entity.getWorld());
-        TrialChamberBossMod.LOGGER.info("Beam maxY: " + maxY); // Debug log
         BeaconBlockEntityRenderer.renderBeam(
                 matrices, vertexConsumers, BEAM_TEXTURE, tickDelta,
                 1, // Height Scale
