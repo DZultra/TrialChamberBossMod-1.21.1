@@ -57,6 +57,11 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         return spawnTickCounter++;
     }
 
+    public int getSpawnTickCounter() {
+        this.markDirty();
+        return spawnTickCounter;
+    }
+
     public void resetSpawnTickCounter() {
         spawnTickCounter = 0;
         this.markDirty();

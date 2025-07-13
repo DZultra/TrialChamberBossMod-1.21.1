@@ -1,6 +1,7 @@
 package net.dzultra.block.SpawnPillarBlock;
 
 import net.dzultra.TrialChamberBossMod;
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -17,6 +18,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
@@ -40,6 +42,7 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
         ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
         ItemStack stack = entity.getStack(0);
         BlockPos entity_pos = entity.getPos();
+
         matrices.push();
         matrices.translate(0.5f, 1.5f, 0.5f); // Position
         matrices.scale(0.5f, 0.5f, 0.5f); // Size
@@ -50,24 +53,31 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
         matrices.pop();
     }
 
-    private void renderAllBeams(MatrixStack matrices, VertexConsumerProvider vertexConsumers, SpawnPillarBlockEntity entity, float tickDelta){
+    private void renderAllBeams(MatrixStack matrices, VertexConsumerProvider vertexConsumers, SpawnPillarBlockEntity entity, float tickDelta) {
         matrices.push();
-        matrices.translate(0f, 0f, 0f); // Position
+        matrices.translate(0f, 0f, 0f);
         renderSingleBeam(matrices, vertexConsumers, tickDelta, entity, entity.getPos());
+        matrices.pop();
 
-        matrices.translate(3f, 0f, 0f); // Position
+        matrices.push();
+        matrices.translate(3f, 0f, 0f);
         renderSingleBeam(matrices, vertexConsumers, tickDelta, entity, entity.getPos().add(3, 0, 0));
+        matrices.pop();
 
-        matrices.translate(0f, 0f, 3f); // Position
+        matrices.push();
+        matrices.translate(0f, 0f, 3f);
         renderSingleBeam(matrices, vertexConsumers, tickDelta, entity, entity.getPos().add(3, 0, 3));
+        matrices.pop();
 
-        matrices.translate(-3f, 0f, 0f); // Position
+        matrices.push();
+        matrices.translate(3f, 0f, 3f);
         renderSingleBeam(matrices, vertexConsumers, tickDelta, entity, entity.getPos().add(0, 0, 3));
         matrices.pop();
     }
 
     private void renderSingleBeam(MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickDelta, BlockEntity entity, BlockPos pos) {
         int maxY = getFirstNonAirBlockAboveY(pos, entity.getWorld());
+        TrialChamberBossMod.LOGGER.info("MaxY: {}", maxY);
         BeaconBlockEntityRenderer.renderBeam(
                 matrices, vertexConsumers, BEAM_TEXTURE, tickDelta,
                 1, // Height Scale

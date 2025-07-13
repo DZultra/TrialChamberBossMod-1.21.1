@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class SpawnAnimation {
-    private static final int maxSpawnTickCounter = 300;
+    private static final int maxSpawnTickCounter = 350;
 
     record TickAction(Predicate<Integer> condition, Runnable action) {}
 
@@ -38,25 +38,25 @@ public class SpawnAnimation {
                         () -> trySetBlockState(world, pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, true)
                 ),
                 new TickAction(
-                        tick -> tick >= 80 && tick <= 195,
+                        tick -> tick >= 80 && tick <= 210,
                         () -> spawnParticleRays(world, pos, spawnTickCounter)
                 ),
                 new TickAction(
-                        tick -> tick == 190,
+                        tick -> tick == 210,
                         () -> spawnBossEntity(world, pos)
                 ),
                 new TickAction(
-                        tick -> tick == 210,
-                        () -> trySetBlockState(world, pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, false)
-                ),
-                new TickAction(
-                        tick -> tick == 215,
+                        tick -> tick == 240,
                         () -> PedestalDownShiftingLogic.shiftPedestalDown(world, spawnPillarBlockEntity)
                 ),
                 new TickAction(
-                        tick -> tick == 235,
+                        tick -> tick == 260,
                         () -> PedestalDownShiftingLogic.shiftPedestalDown(world, spawnPillarBlockEntity)
                 ),
+//                new TickAction(
+//                        tick -> tick == 300,
+//                        () -> trySetBlockState(world, pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, false)
+//                ),
                 new TickAction(
                         tick -> tick == maxSpawnTickCounter,
                         () -> {
@@ -172,10 +172,10 @@ public class SpawnAnimation {
     }
 
     private static void spawnBossEntity(World world, BlockPos pos){
-        BlockPos spawnPos = new BlockPos(pos.getX() + 2, pos.getY() + 3, pos.getZ() + 2);
+        Vec3d spawnPos = new Vec3d(pos.getX() + 2, pos.getY() + 2.5, pos.getZ() + 2);
         CreeperEntity creeper = new CreeperEntity(EntityType.CREEPER, world);
 
-        creeper.refreshPositionAndAngles(Vec3d.of(spawnPos), 360F, 0);
+        creeper.refreshPositionAndAngles(spawnPos, 360F, 0);
         world.spawnEntity(creeper);
     }
 }
