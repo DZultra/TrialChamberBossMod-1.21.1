@@ -2,16 +2,13 @@ package net.dzultra.block.SpawnPillarBlock;
 
 import net.dzultra.TrialChamberBossMod;
 import net.dzultra.block.ModBlocks;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -84,6 +81,24 @@ public class SpawnPillarLogic {
             return false;
         }
         return true;
+    }
+
+    protected static boolean checkIfPillarsExist(World world, BlockState state, SpawnPillarBlockEntity spawnPillarBlockEntity) {
+        if (world.isClient()) return false;
+        // Server Side
+        BlockPos block0Pos = spawnPillarBlockEntity.getPos();
+        BlockPos block1Pos = block0Pos.add(3, 0, 0);
+        BlockPos block2Pos = block0Pos.add(0, 0, 3);
+        BlockPos block3Pos = block0Pos.add(3, 0, 3);
+
+        BlockState block1 = world.getBlockState(block1Pos);
+        BlockState block2 = world.getBlockState(block2Pos);
+        BlockState block3 = world.getBlockState(block3Pos);
+
+        // Are the needed Blocks "Spawn Pillars"? If so, continue
+        return block1.isOf(ModBlocks.SPAWN_PILLAR)
+                && block2.isOf(ModBlocks.SPAWN_PILLAR)
+                && block3.isOf(ModBlocks.SPAWN_PILLAR);
     }
 
     // Starting Boss Spawn in terms of setting "running_logic" on one Pillar true
