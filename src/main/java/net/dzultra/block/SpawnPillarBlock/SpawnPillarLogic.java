@@ -165,7 +165,11 @@ public class SpawnPillarLogic {
             double velocityZ = ThreadLocalRandom.current().nextDouble(-0.02, 0.02);
 
             Vec3d velocity = new Vec3d(velocityX, velocityY, velocityZ);
-            Vec3d position =  new Vec3d(pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5);
+            Vec3d position =  new Vec3d(
+                    pos.getX() + 0.5 + (blockEntity.getXItemRenderOffset() * blockEntity.getX_render_sign()),
+                    pos.getY() + 1.5 + blockEntity.getYItemRenderOffset(),
+                    pos.getZ() + 0.5 + (blockEntity.getZItemRenderOffset() * blockEntity.getZ_render_sign())
+            );
 
 
             spawnParticle(world, ParticleTypes.END_ROD, position, velocity, 1, 0.015);

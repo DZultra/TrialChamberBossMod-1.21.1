@@ -30,6 +30,29 @@ public class TrialChamberBossModClient implements ClientModInitializer {
                 // Update the BlockEntity's inventory with the payload data
                 spawnPillarBlockEntity.setStack(0, payload.inventory().getFirst());
 
+                int xItemRenderSign = 1;
+                int zItemRenderSign = 1;
+
+                switch (payload.itemRenderSign()) {
+                    case 1:
+                        xItemRenderSign = -1;
+                        break;
+                    case 2:
+                        zItemRenderSign = -1;
+                        break;
+                    case 3:
+                        xItemRenderSign = -1;
+                        zItemRenderSign = -1;
+                        break;
+                }
+
+                spawnPillarBlockEntity.setX_render_sign(xItemRenderSign);
+                spawnPillarBlockEntity.setZ_render_sign(zItemRenderSign);
+
+                spawnPillarBlockEntity.setXItemRenderOffset((float) payload.xItemRenderOffset());
+                spawnPillarBlockEntity.setYItemRenderOffset((float) payload.yItemRenderOffset());
+                spawnPillarBlockEntity.setZItemRenderOffset((float) payload.zItemRenderOffset());
+
                 // Mark the BlockEntity for rerendering (optional, if needed)
                 world.updateListeners(payload.blockPos(), blockEntity.getCachedState(), blockEntity.getCachedState(), Block.NOTIFY_ALL);
             }

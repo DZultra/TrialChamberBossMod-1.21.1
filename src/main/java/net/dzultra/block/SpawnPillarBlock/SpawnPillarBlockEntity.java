@@ -3,7 +3,6 @@ package net.dzultra.block.SpawnPillarBlock;
 import net.dzultra.block.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -25,6 +24,8 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
     private float x_item_render_offset = 0;
     private float y_item_render_offset = 0;
     private float z_item_render_offset = 0;
+    private int x_render_sign = 0;
+    private int z_render_sign = 0;
 
     public SpawnPillarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SPAWN_PILLAR_BE, pos, state);
@@ -96,6 +97,24 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         this.markDirty();
     }
 
+    public int getX_render_sign() {
+        this.markDirty();
+        return x_render_sign;
+    }
+    public int getZ_render_sign() {
+        this.markDirty();
+        return z_render_sign;
+    }
+
+    public void setX_render_sign(int amount) {
+        x_render_sign = amount;
+        this.markDirty();
+    }
+    public void setZ_render_sign(int amount) {
+        z_render_sign = amount;
+        this.markDirty();
+    }
+
     @Override
     public DefaultedList<ItemStack> getItems() {
         return inventory;
@@ -107,9 +126,12 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         Inventories.writeNbt(nbt, inventory, registryLookup);
         nbt.putInt("spawnTickCounter", spawnTickCounter);
         nbt.putInt("particleTickCounter", particleTickCounter);
+        nbt.putInt("x_render_sign", x_render_sign);
+        nbt.putInt("z_render_sign", z_render_sign);
         nbt.putFloat("x_item_render_offset", x_item_render_offset);
         nbt.putFloat("y_item_render_offset", y_item_render_offset);
         nbt.putFloat("z_item_render_offset", z_item_render_offset);
+
     }
 
     @Override
@@ -118,6 +140,8 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         Inventories.readNbt(nbt, inventory, registryLookup);
         spawnTickCounter = nbt.getInt("spawnTickCounter");
         particleTickCounter = nbt.getInt("particleTickCounter");
+        x_render_sign = nbt.getInt("x_render_sign");
+        z_render_sign = nbt.getInt("z_render_sign");
         x_item_render_offset = nbt.getFloat("x_item_render_offset");
         y_item_render_offset = nbt.getFloat("y_item_render_offset");
         z_item_render_offset = nbt.getFloat("z_item_render_offset");
@@ -146,9 +170,9 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         return createNbt(registryLookup);
     }
 
-    public void syncInventory() {
+    public void syncData() {
         if (this.getWorld() != null && !this.getWorld().isClient()) {
-            SpawnPillarBlock.sendSyncPacket(this.getWorld(), this.getPos(), this.getItems());
+            SpawnPillarBlock.sendSyncPacket(this.getWorld(), this.getPos(), this.getItems(), this.getXItemRenderOffset(), this.getYItemRenderOffset(), this.getZItemRenderOffset(), this.getX_render_sign(), this.getZ_render_sign());
         }
     }
 }

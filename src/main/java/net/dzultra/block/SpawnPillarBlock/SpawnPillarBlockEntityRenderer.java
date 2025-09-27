@@ -16,7 +16,6 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
@@ -41,9 +40,9 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
         ItemStack stack = entity.getStack(0);
         BlockPos entity_pos = entity.getPos();
 
-        float x_item_offset = entity.getXItemRenderOffset();
+        float x_item_offset = entity.getXItemRenderOffset() * entity.getX_render_sign();
         float y_item_offset = entity.getYItemRenderOffset();
-        float z_item_offset = entity.getZItemRenderOffset();
+        float z_item_offset = entity.getZItemRenderOffset() * entity.getZ_render_sign();
 
         matrices.push();
         matrices.translate(0.5f + x_item_offset, 1.5f + y_item_offset, 0.5f + z_item_offset); // Position

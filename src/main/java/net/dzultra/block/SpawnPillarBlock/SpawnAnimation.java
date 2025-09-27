@@ -10,77 +10,87 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class SpawnAnimation {
-    private static final int maxSpawnTickCounter = 350;
-
-    record TickAction(Predicate<Integer> condition, Runnable action) {}
+    private static final int maxSpawnTickCounter = 400;
+    // Define tick-based actions
+    private static final List<TickAction> actions = List.of(
+            new TickAction(
+                    tick -> tick == 1,
+                    (tickData) -> setRenderSigns(tickData.world, tickData.blockEntity)
+            ),
+            new TickAction(
+                    tick -> tick == 40,
+                    (tickData) -> trySetBlockState(tickData.world, tickData.pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, true)
+            ),
+            new TickAction(
+                    tick -> tick >= 80 && tick <= 260,
+                    (tickData) -> spawnParticleRays(tickData.world, tickData.pos, tickData.spawnTickCounter)
+            ),
+            new TickAction(
+                    tick -> tick >= 210 && tick <= 260,
+                    (tickData) -> {
+                        float delta = (float) (tickData.spawnTickCounter - 210) / (260 - 210);
+                        tickData.world.getPlayers().forEach(p -> p.sendMessage(Text.literal("translating@" + tickData.spawnTickCounter + " / " + delta)));
+                        runItemRenderTranslations(SpawnPillarLogic.getAllPillarEntities(tickData.world, tickData.blockEntity), tickData.spawnTickCounter);
+                    }
+            ),
+            /*new TickAction(
+                    tick -> tick == 240,
+                    (tickData) -> PedestalDownShiftingLogic.shiftPedestalDown(tickData.world, tickData.blockEntity)
+            ),
+            new TickAction(
+                    tick -> tick == 260,
+                    (tickData) -> PedestalDownShiftingLogic.shiftPedestalDown(tickData.world, tickData.blockEntity)
+            ),*/
+            new TickAction(
+                    tick -> tick == 280,
+                    (tickData) -> spawnBossEntity(tickData.world, tickData.pos)
+            ),
+            new TickAction(
+                    tick -> tick == 300,
+                    (tickData) -> trySetBlockState(tickData.world, tickData.pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, false)
+            ),
+            new TickAction(
+                    tick -> true,
+                    (tickData) -> tickData.world.getPlayers().forEach((p) -> {
+                        p.sendMessage(Text.of("" + tickData.spawnTickCounter), true);
+                    })
+            ),
+            new TickAction(
+                    tick -> tick == maxSpawnTickCounter,
+                    (tickData) -> {
+                        tickData.blockEntity.resetSpawnTickCounter();
+                        resetSpawnPillars(tickData.world, tickData.pos);
+                        resetItemRenderTranslations(SpawnPillarLogic.getAllPillarEntities(tickData.world, tickData.blockEntity));
+                    }
+            )
+    );
 
     // -- Main Function to Tick --
     protected static void tickBossSpawnAnimation(ServerWorld world, BlockState state, SpawnPillarBlockEntity spawnPillarBlockEntity, BlockPos pos) {
         // Server Side
-
         // Only Counts upwards on the Anchor SpawnPillar
         // Different for each SpawnPillar Group
         int spawnTickCounter = spawnPillarBlockEntity.getAndIncrementSpawnTickCounter();
 
-        // Define tick-based actions
-        List<TickAction> actions = List.of(
-                new TickAction(
-                        tick -> tick == 40,
-                        () -> trySetBlockState(world, pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, true)
-                ),
-                new TickAction(
-                        tick -> tick >= 80 && tick <= 210,
-                        () -> spawnParticleRays(world, pos, spawnTickCounter)
-                ),
-                new TickAction(
-                        tick -> tick == 210,
-                        () -> spawnBossEntity(world, pos)
-                ),
-                new TickAction(
-                        tick -> tick >= 210 && tick <= 250,
-                        () -> runItemRenderTranslations(SpawnPillarLogic.getAllPillarEntities(world, spawnPillarBlockEntity), spawnTickCounter)
-                ),
-//                new TickAction(
-//                        tick -> tick == 240,
-//                        () -> PedestalDownShiftingLogic.shiftPedestalDown(world, spawnPillarBlockEntity)
-//                ),
-//                new TickAction(
-//                        tick -> tick == 260,
-//                        () -> PedestalDownShiftingLogic.shiftPedestalDown(world, spawnPillarBlockEntity)
-//                ),
-//                new TickAction(
-//                        tick -> tick == 270,
-//                        () -> trySetBlockState(world, pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, false)
-//                ),
-                new TickAction(
-                        tick -> tick == maxSpawnTickCounter,
-                        () -> {
-                            spawnPillarBlockEntity.resetSpawnTickCounter();
-                            resetSpawnPillars(world, pos);
-                            resetItemRenderTranslations(SpawnPillarLogic.getAllPillarEntities(world, spawnPillarBlockEntity));
-                        }
-                )
-        );
-
+        TickData tickData = new TickData(world, pos, state, spawnPillarBlockEntity, spawnTickCounter);
         actions.forEach(action -> {
             if (action.condition.test(spawnTickCounter)) {
-                action.action.run();
+                action.consumer.accept(tickData);
             }
         });
     }
-
-    // -- SpawnTickCounter dependent Function --
 
     private static void spawnParticleRays(ServerWorld world, BlockPos pos0, int spawnTickCounter) {
         // Calculate base position (center of block + 1.5 blocks up)
@@ -146,17 +156,17 @@ public class SpawnAnimation {
     private static void runItemRenderTranslations(ArrayList<SpawnPillarBlockEntity> list, int spawnTickCounter) {
         if (list.isEmpty()) return;
 
-        SpawnPillarBlockEntity entity0 = list.getFirst();
-        if (entity0 != null) {
-            if (spawnTickCounter == 210) {
-                entity0.setXItemRenderOffset(0.5f);
-                entity0.setYItemRenderOffset(0.5f);
-                entity0.setZItemRenderOffset(0.5f);
-            } else if (spawnTickCounter == 250) {
-                entity0.setXItemRenderOffset(1f);
-                entity0.setYItemRenderOffset(1f);
-                entity0.setZItemRenderOffset(1f);
-            }
+        float multiplier = 1.5f;
+
+        float delta = (float) (spawnTickCounter - 210) / (260 - 210) * multiplier;
+
+
+        for (SpawnPillarBlockEntity entity : list) {
+            if (entity == null) continue;
+            entity.setXItemRenderOffset(delta);
+            entity.setYItemRenderOffset(delta);
+            entity.setZItemRenderOffset(delta);
+            entity.syncData();
         }
     }
 
@@ -199,6 +209,27 @@ public class SpawnAnimation {
         }
     }
 
+    private static void setRenderSigns(ServerWorld world, SpawnPillarBlockEntity spawnPillarBlockEntity){
+        ArrayList<SpawnPillarBlockEntity> pillars = SpawnPillarLogic.getAllPillarEntities(world, spawnPillarBlockEntity);
+        if (pillars.get(0) != null) {
+            pillars.get(0).setX_render_sign(1);
+            pillars.get(0).setZ_render_sign(1);
+        }
+        if (pillars.get(1) != null) {
+            pillars.get(1).setX_render_sign(-1);
+            pillars.get(1).setZ_render_sign(1);
+        }
+        if (pillars.get(2) != null) {
+            pillars.get(2).setX_render_sign(1);
+            pillars.get(2).setZ_render_sign(-1);
+        }
+        if (pillars.get(3) != null) {
+            pillars.get(3).setX_render_sign(-1);
+            pillars.get(3).setZ_render_sign(-1);
+        }
+
+    }
+
     protected static void trySetBlockState(ServerWorld world, BlockPos pos, Property<Boolean> property, boolean b) {
         BlockEntity be = world.getBlockEntity(pos);
         if (be instanceof SpawnPillarBlockEntity spawnPillarBlockEntity && world.getBlockState(pos).getBlock() != Blocks.AIR) {
@@ -207,11 +238,18 @@ public class SpawnAnimation {
         }
     }
 
-    private static void spawnBossEntity(World world, BlockPos pos){
+    private static void spawnBossEntity(World world, BlockPos pos) {
         Vec3d spawnPos = new Vec3d(pos.getX() + 2, pos.getY() + 2.5, pos.getZ() + 2);
         CreeperEntity creeper = new CreeperEntity(EntityType.CREEPER, world);
 
         creeper.refreshPositionAndAngles(spawnPos, 360F, 0);
         world.spawnEntity(creeper);
+    }
+
+    record TickData(ServerWorld world, BlockPos pos, BlockState state, SpawnPillarBlockEntity blockEntity,
+                    int spawnTickCounter) {
+    }
+
+    record TickAction(Predicate<Integer> condition, Consumer<TickData> consumer) {
     }
 }

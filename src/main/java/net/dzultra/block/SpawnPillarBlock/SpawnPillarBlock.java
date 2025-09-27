@@ -148,13 +148,23 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
 
     protected static void syncAndMarkBlock(World world, SpawnPillarBlockEntity entity, BlockPos pos, BlockState state) {
         entity.markDirty();
-        entity.syncInventory();
+        entity.syncData();
         world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
     }
 
-    public static void sendSyncPacket(  World world, BlockPos blockpos, DefaultedList<ItemStack> inventory) {
+    public static void sendSyncPacket(World world, BlockPos blockpos, DefaultedList<ItemStack> inventory, float xItemRenderOffset, float yItemRenderOffset, float zItemRenderOffset, int xItemRenderSign, int zItemRenderSign) {
         if (world.isClient()) return;
-        SyncTCBSpawnPillarBlockEntityS2CPayload payload = new SyncTCBSpawnPillarBlockEntityS2CPayload(blockpos, inventory);
+
+        int itemRenderSign = 0;
+        if (xItemRenderSign == -1 && zItemRenderSign == 1) {
+            itemRenderSign = 1;
+        } else if (xItemRenderSign == 1 && zItemRenderSign == -1) {
+            itemRenderSign = 2;
+        } else if (xItemRenderSign == -1 && zItemRenderSign == -1) {
+            itemRenderSign = 3;
+        }
+
+        SyncTCBSpawnPillarBlockEntityS2CPayload payload = new SyncTCBSpawnPillarBlockEntityS2CPayload(blockpos, inventory, xItemRenderOffset, yItemRenderOffset, zItemRenderOffset, itemRenderSign);
 
         for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.world((ServerWorld) world)) {
             ServerPlayNetworking.send(serverPlayerEntity, payload);
