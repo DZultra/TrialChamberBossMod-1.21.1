@@ -22,6 +22,9 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
     private float rotation = 0;
     private int spawnTickCounter = 0; // TickCounter for Counting Ticks after Boss Spawning started
     private int particleTickCounter = 0; // TickCounter for Particle Spawning above Block when it is Activated
+    private float x_item_render_offset = 0;
+    private float y_item_render_offset = 0;
+    private float z_item_render_offset = 0;
 
     public SpawnPillarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SPAWN_PILLAR_BE, pos, state);
@@ -67,6 +70,32 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         this.markDirty();
     }
 
+    public float getXItemRenderOffset() {
+        this.markDirty();
+        return x_item_render_offset;
+    }
+    public float getYItemRenderOffset() {
+        this.markDirty();
+        return y_item_render_offset;
+    }
+    public float getZItemRenderOffset() {
+        this.markDirty();
+        return z_item_render_offset;
+    }
+
+    public void setXItemRenderOffset(float amount) {
+        x_item_render_offset = amount;
+        this.markDirty();
+    }
+    public void setYItemRenderOffset(float amount) {
+        y_item_render_offset = amount;
+        this.markDirty();
+    }
+    public void setZItemRenderOffset(float amount) {
+        z_item_render_offset = amount;
+        this.markDirty();
+    }
+
     @Override
     public DefaultedList<ItemStack> getItems() {
         return inventory;
@@ -78,6 +107,9 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         Inventories.writeNbt(nbt, inventory, registryLookup);
         nbt.putInt("spawnTickCounter", spawnTickCounter);
         nbt.putInt("particleTickCounter", particleTickCounter);
+        nbt.putFloat("x_item_render_offset", x_item_render_offset);
+        nbt.putFloat("y_item_render_offset", y_item_render_offset);
+        nbt.putFloat("z_item_render_offset", z_item_render_offset);
     }
 
     @Override
@@ -86,6 +118,9 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         Inventories.readNbt(nbt, inventory, registryLookup);
         spawnTickCounter = nbt.getInt("spawnTickCounter");
         particleTickCounter = nbt.getInt("particleTickCounter");
+        x_item_render_offset = nbt.getFloat("x_item_render_offset");
+        y_item_render_offset = nbt.getFloat("y_item_render_offset");
+        z_item_render_offset = nbt.getFloat("z_item_render_offset");
     }
 
     @Override

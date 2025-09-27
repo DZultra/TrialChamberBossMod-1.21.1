@@ -15,6 +15,8 @@ import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -46,15 +48,19 @@ public class SpawnAnimation {
                         () -> spawnBossEntity(world, pos)
                 ),
                 new TickAction(
-                        tick -> tick == 240,
-                        () -> PedestalDownShiftingLogic.shiftPedestalDown(world, spawnPillarBlockEntity)
-                ),
-                new TickAction(
-                        tick -> tick == 260,
-                        () -> PedestalDownShiftingLogic.shiftPedestalDown(world, spawnPillarBlockEntity)
+                        tick -> tick >= 210 && tick <= 250,
+                        () -> runItemRenderTranslations(SpawnPillarLogic.getAllPillarEntities(world, spawnPillarBlockEntity), spawnTickCounter)
                 ),
 //                new TickAction(
-//                        tick -> tick == 300,
+//                        tick -> tick == 240,
+//                        () -> PedestalDownShiftingLogic.shiftPedestalDown(world, spawnPillarBlockEntity)
+//                ),
+//                new TickAction(
+//                        tick -> tick == 260,
+//                        () -> PedestalDownShiftingLogic.shiftPedestalDown(world, spawnPillarBlockEntity)
+//                ),
+//                new TickAction(
+//                        tick -> tick == 270,
 //                        () -> trySetBlockState(world, pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, false)
 //                ),
                 new TickAction(
@@ -62,6 +68,7 @@ public class SpawnAnimation {
                         () -> {
                             spawnPillarBlockEntity.resetSpawnTickCounter();
                             resetSpawnPillars(world, pos);
+                            resetItemRenderTranslations(SpawnPillarLogic.getAllPillarEntities(world, spawnPillarBlockEntity));
                         }
                 )
         );
@@ -136,6 +143,35 @@ public class SpawnAnimation {
         }
     }
 
+    private static void runItemRenderTranslations(ArrayList<SpawnPillarBlockEntity> list, int spawnTickCounter) {
+        if (list.isEmpty()) return;
+
+        SpawnPillarBlockEntity entity0 = list.getFirst();
+        if (entity0 != null) {
+            if (spawnTickCounter == 210) {
+                entity0.setXItemRenderOffset(0.5f);
+                entity0.setYItemRenderOffset(0.5f);
+                entity0.setZItemRenderOffset(0.5f);
+            } else if (spawnTickCounter == 250) {
+                entity0.setXItemRenderOffset(1f);
+                entity0.setYItemRenderOffset(1f);
+                entity0.setZItemRenderOffset(1f);
+            }
+        }
+    }
+
+    private static void resetItemRenderTranslations(ArrayList<SpawnPillarBlockEntity> list) {
+        if (list.isEmpty()) return;
+
+        list.forEach(entity -> {
+            if (entity != null) {
+                entity.setXItemRenderOffset(0);
+                entity.setYItemRenderOffset(0);
+                entity.setZItemRenderOffset(0);
+            }
+        });
+    }
+
     // -- Helper Functions --
     private static void spawnParticle(ServerWorld world, Integer spawnTickCounter, Position pos, Integer threshold, double x_offset, double y_offset, double z_offset) {
         if (spawnTickCounter >= threshold) {
@@ -163,7 +199,7 @@ public class SpawnAnimation {
         }
     }
 
-    private static void trySetBlockState(ServerWorld world, BlockPos pos, Property<Boolean> property, boolean b) {
+    protected static void trySetBlockState(ServerWorld world, BlockPos pos, Property<Boolean> property, boolean b) {
         BlockEntity be = world.getBlockEntity(pos);
         if (be instanceof SpawnPillarBlockEntity spawnPillarBlockEntity && world.getBlockState(pos).getBlock() != Blocks.AIR) {
             SpawnPillarLogic.setBlockState(world, pos, property, b);

@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SpawnPillarLogic {
@@ -31,7 +32,12 @@ public class SpawnPillarLogic {
         // Once the startBossSpawn() was executed the BlockState "running_logic" is set true
         // This starts the SpawnAnimation
         if (state.get(SpawnPillarBlock.RUNNING_LOGIC) && !world.isClient()) { //
-            SpawnAnimation.tickBossSpawnAnimation(((ServerWorld) world), state, spawnPillarBlockEntity, pos);
+            if (checkIfPillarsExist(world, spawnPillarBlockEntity)) {
+                SpawnAnimation.tickBossSpawnAnimation(((ServerWorld) world), state, spawnPillarBlockEntity, pos);
+            } else {
+                SpawnAnimation.trySetBlockState((ServerWorld) world, pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, false);
+                SpawnAnimation.resetSpawnPillars((ServerWorld) world, spawnPillarBlockEntity.getPos());
+            }
         }
 
         // Check whether the Boss Spawning should start and do so if it should
@@ -83,7 +89,7 @@ public class SpawnPillarLogic {
         return true;
     }
 
-    protected static boolean checkIfPillarsExist(World world, BlockState state, SpawnPillarBlockEntity spawnPillarBlockEntity) {
+    protected static boolean checkIfPillarsExist(World world, SpawnPillarBlockEntity spawnPillarBlockEntity) {
         if (world.isClient()) return false;
         // Server Side
         BlockPos block0Pos = spawnPillarBlockEntity.getPos();
@@ -95,10 +101,27 @@ public class SpawnPillarLogic {
         BlockState block2 = world.getBlockState(block2Pos);
         BlockState block3 = world.getBlockState(block3Pos);
 
-        // Are the needed Blocks "Spawn Pillars"? If so, continue
         return block1.isOf(ModBlocks.SPAWN_PILLAR)
                 && block2.isOf(ModBlocks.SPAWN_PILLAR)
                 && block3.isOf(ModBlocks.SPAWN_PILLAR);
+    }
+
+    protected static ArrayList<SpawnPillarBlockEntity> getAllPillarEntities(World world, SpawnPillarBlockEntity spawnPillarBlockEntity) {
+        if (world.isClient() || !checkIfPillarsExist(world, spawnPillarBlockEntity)) return new ArrayList<SpawnPillarBlockEntity>();
+        // Server Side
+        BlockPos block0Pos = spawnPillarBlockEntity.getPos();
+        BlockPos block1Pos = block0Pos.add(3, 0, 0);
+        BlockPos block2Pos = block0Pos.add(0, 0, 3);
+        BlockPos block3Pos = block0Pos.add(3, 0, 3);
+
+        var list = new ArrayList<SpawnPillarBlockEntity>();
+
+        list.add((SpawnPillarBlockEntity) world.getBlockEntity(block0Pos));
+        list.add((SpawnPillarBlockEntity) world.getBlockEntity(block1Pos));
+        list.add((SpawnPillarBlockEntity) world.getBlockEntity(block2Pos));
+        list.add((SpawnPillarBlockEntity) world.getBlockEntity(block3Pos));
+
+        return list;
     }
 
     // Starting Boss Spawn in terms of setting "running_logic" on one Pillar true

@@ -1,7 +1,5 @@
 package net.dzultra.block.SpawnPillarBlock;
 
-import net.dzultra.TrialChamberBossMod;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -43,13 +41,19 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
         ItemStack stack = entity.getStack(0);
         BlockPos entity_pos = entity.getPos();
 
+        float x_item_offset = entity.getXItemRenderOffset();
+        float y_item_offset = entity.getYItemRenderOffset();
+        float z_item_offset = entity.getZItemRenderOffset();
+
         matrices.push();
-        matrices.translate(0.5f, 1.5f, 0.5f); // Position
+        matrices.translate(0.5f + x_item_offset, 1.5f + y_item_offset, 0.5f + z_item_offset); // Position
         matrices.scale(0.5f, 0.5f, 0.5f); // Size
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getRenderingRotation())); // Rotation
 
-        itemRenderer.renderItem(stack, ModelTransformationMode.GUI, getLightLevel(entity.getWorld(),
-                entity_pos), OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), 1);
+        if (entity.getWorld() != null) {
+            itemRenderer.renderItem(stack, ModelTransformationMode.GUI, getLightLevel(entity.getWorld(),
+                    entity_pos), OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), 1);
+        }
         matrices.pop();
     }
 
@@ -77,7 +81,7 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
 
     private void renderSingleBeam(MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickDelta, BlockEntity entity, BlockPos pos) {
         int maxY = getFirstNonAirBlockAboveY(pos, entity.getWorld());
-        TrialChamberBossMod.LOGGER.info("MaxY: {}", maxY);
+        //TrialChamberBossMod.LOGGER.info("MaxY: {}", maxY);
         BeaconBlockEntityRenderer.renderBeam(
                 matrices, vertexConsumers, BEAM_TEXTURE, tickDelta,
                 1, // Height Scale
