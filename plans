@@ -1,12 +1,37 @@
 1. Particle Rays from all 4 Pillars to the middle where Boss Would spawn
 2. 4 Spawn Shards Travel on those rays into the middle while beams are on the Pillars
-3. When all 4 Spawn Shards are in the Middle, the beams fuse together in a circle motion,
-   in the middle, forming one Beam
-4. Items + Beam Vanishes
-5. Boss Spawns with Sounds and somewhat explosion effect with the spawn pos as the origin
+3. Items are fused together on top, some glow/spark effect on top then boss spawns
+4. Items + Beams Vanish
+5. Boss Spawns with Sounds with the spawn pos as the origin
 6. Room Transformation
     -> Pedestal Dropdown
-    -> 4 Pillars on the sides (not corners) have a beam out of fire particles from top to bottom
+    -> 4 Pillars on the sides (not corners) have a beam out of fire particles from bottom to top
+        which slowly connect to the top
+        -> Fire Particles do dmg if you go into them (RayCast)
+        -> Block Display of a Waxed Oxidized Copper Trapdoor and in the middle where the fire starts
+            /summon block_display 92 -50 86 {NoGravity:1b,Silent:1b,block_state:{Name:"minecraft:waxed_oxidized_copper_trapdoor",Properties:{half:"bottom"}}}
     -> Fire Beam move and focus on the Boss which hasn't moved yet -> gives it power
+       -> Fire Beams center above the Boss to a single point slowly
+          and then a single beam goes down to the boss making it glow for a second
     -> while it gives him power, step by step, the pillars held by chains are moved up, using upwards shifting
+        -> will be used as a weapon later, if player is below them they can drop down and do dmg
+    -> Block Displays get removed with sound (beacon break)
+    -> the pillars on which the block displays are on sink into the ground
+    -> big middle pedestal drops down further 3x into the ground (needs a modified Pillar downshifting)
     -> Boss Activation
+
+
+
+Passive Behaviour:
+if there is a beacon in radius make the beacon into
+an Ominous Beacon which needs an Ominous Key to be reactivated/unlocked
+Ominous Beacons give the opposite effects of what the original beacon would give them
+
+
+Different Phases with different attacks
+Custom BossBar texture
+
+Immune to Bow, Arrow just ricochets off it
+Also immune to plain Crossbow, needs piercing, the higher piercing the bigger dmg
+
+Needs a pull attack where it spins and pulls player towards them
