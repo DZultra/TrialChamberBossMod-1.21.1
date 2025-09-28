@@ -40,8 +40,6 @@ public class SpawnAnimation {
             new TickAction(
                     tick -> tick >= 210 && tick <= 260,
                     (tickData) -> {
-                        float delta = (float) (tickData.spawnTickCounter - 210) / (260 - 210);
-                        tickData.world.getPlayers().forEach(p -> p.sendMessage(Text.literal("translating@" + tickData.spawnTickCounter + " / " + delta)));
                         runItemRenderTranslations(SpawnPillarLogic.getAllPillarEntities(tickData.world, tickData.blockEntity), tickData.spawnTickCounter);
                     }
             ),
