@@ -22,7 +22,15 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class SpawnAnimation {
-    private static final int maxSpawnTickCounter = 400;
+    private static final int maxSpawnTickCounter = 480;
+
+    private static final int particleRaysStart = 160;
+    private static final int particleRaysEnd = 340;
+
+    private static final int itemRenderTranslationStart = 290;
+    private static final int itemRenderTranslationEnd = 340;
+
+
     // Define tick-based actions
     private static final List<TickAction> actions = List.of(
             new TickAction(
@@ -33,30 +41,34 @@ public class SpawnAnimation {
                     tick -> tick == 40,
                     (tickData) -> trySetBlockState(tickData.world, tickData.pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, true)
             ),
+//            new TickAction(
+//                    tick -> tick == 50,
+//                    (tickData) -> spawnPulsingParticles(tickData.world, tickData.pos, tickData.blockEntity)
+//            ),
             new TickAction(
-                    tick -> tick >= 80 && tick <= 260,
+                    tick -> tick >= particleRaysStart && tick <= particleRaysEnd,
                     (tickData) -> spawnParticleRays(tickData.world, tickData.pos, tickData.spawnTickCounter)
             ),
             new TickAction(
-                    tick -> tick >= 210 && tick <= 260,
+                    tick -> tick >= itemRenderTranslationStart && tick <= itemRenderTranslationEnd,
                     (tickData) -> {
                         runItemRenderTranslations(SpawnPillarLogic.getAllPillarEntities(tickData.world, tickData.blockEntity), tickData.spawnTickCounter);
                     }
             ),
-            /*new TickAction(
-                    tick -> tick == 240,
-                    (tickData) -> PedestalDownShiftingLogic.shiftPedestalDown(tickData.world, tickData.blockEntity)
-            ),
             new TickAction(
-                    tick -> tick == 260,
-                    (tickData) -> PedestalDownShiftingLogic.shiftPedestalDown(tickData.world, tickData.blockEntity)
-            ),*/
-            new TickAction(
-                    tick -> tick == 280,
+                    tick -> tick == 380,
                     (tickData) -> spawnBossEntity(tickData.world, tickData.pos)
             ),
             new TickAction(
-                    tick -> tick == 300,
+                    tick -> tick == 390,
+                    (tickData) -> PedestalDownShiftingLogic.shiftPedestalDown(tickData.world, tickData.blockEntity)
+            ),
+            new TickAction(
+                    tick -> tick == 420,
+                    (tickData) -> PedestalDownShiftingLogic.shiftPedestalDown(tickData.world, tickData.blockEntity)
+            ),
+            new TickAction(
+                    tick -> tick == 440,
                     (tickData) -> trySetBlockState(tickData.world, tickData.pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, false)
             ),
             new TickAction(
@@ -88,6 +100,10 @@ public class SpawnAnimation {
                 action.consumer.accept(tickData);
             }
         });
+    }
+
+    private static void spawnPulsingParticles(ServerWorld world, BlockPos pos, SpawnPillarBlockEntity entity) {
+
     }
 
     private static void spawnParticleRays(ServerWorld world, BlockPos pos0, int spawnTickCounter) {
@@ -156,7 +172,7 @@ public class SpawnAnimation {
 
         float multiplier = 1.5f;
 
-        float delta = (float) (spawnTickCounter - 210) / (260 - 210) * multiplier;
+        float delta = (float) (spawnTickCounter - itemRenderTranslationStart) / (itemRenderTranslationEnd - itemRenderTranslationStart) * multiplier;
 
 
         for (SpawnPillarBlockEntity entity : list) {
@@ -199,7 +215,7 @@ public class SpawnAnimation {
                     world,
                     spawnTickCounter,
                     position,
-                    80 + (5 * i),
+                    particleRaysStart + (5 * i),
                     xSign * velocity,
                     velocity,
                     zSign * velocity
