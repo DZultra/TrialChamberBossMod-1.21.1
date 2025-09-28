@@ -24,6 +24,9 @@ import java.util.function.Predicate;
 public class SpawnAnimation {
     private static final int maxSpawnTickCounter = 480;
 
+    private static final int pulsingParticlesStart = 50;
+    private static final int pulsingParticlesEnd = 150;
+
     private static final int particleRaysStart = 160;
     private static final int particleRaysEnd = 340;
 
@@ -41,10 +44,16 @@ public class SpawnAnimation {
                     tick -> tick == 40,
                     (tickData) -> trySetBlockState(tickData.world, tickData.pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, true)
             ),
-//            new TickAction(
-//                    tick -> tick == 50,
-//                    (tickData) -> spawnPulsingParticles(tickData.world, tickData.pos, tickData.blockEntity)
-//            ),
+            new TickAction(
+                    tick -> tick >= pulsingParticlesStart && tick <= pulsingParticlesEnd,
+                    (tickData) -> {
+                        spawnPulsingParticles(
+                                tickData.world,
+                                SpawnPillarLogic.getAllPillarEntities(tickData.world, tickData.blockEntity),
+                                tickData.spawnTickCounter
+                        );
+                    }
+            ),
             new TickAction(
                     tick -> tick >= particleRaysStart && tick <= particleRaysEnd,
                     (tickData) -> spawnParticleRays(tickData.world, tickData.pos, tickData.spawnTickCounter)
@@ -52,7 +61,10 @@ public class SpawnAnimation {
             new TickAction(
                     tick -> tick >= itemRenderTranslationStart && tick <= itemRenderTranslationEnd,
                     (tickData) -> {
-                        runItemRenderTranslations(SpawnPillarLogic.getAllPillarEntities(tickData.world, tickData.blockEntity), tickData.spawnTickCounter);
+                        runItemRenderTranslations(
+                                SpawnPillarLogic.getAllPillarEntities(tickData.world, tickData.blockEntity),
+                                tickData.spawnTickCounter
+                        );
                     }
             ),
             new TickAction(
@@ -81,7 +93,7 @@ public class SpawnAnimation {
                     tick -> tick == maxSpawnTickCounter,
                     (tickData) -> {
                         tickData.blockEntity.resetSpawnTickCounter();
-                        resetSpawnPillars(tickData.world, tickData.pos);
+                        resetSpawnPillarsWithInventory(tickData.world, tickData.blockEntity);
                         resetItemRenderTranslations(SpawnPillarLogic.getAllPillarEntities(tickData.world, tickData.blockEntity));
                     }
             )
@@ -102,8 +114,42 @@ public class SpawnAnimation {
         });
     }
 
-    private static void spawnPulsingParticles(ServerWorld world, BlockPos pos, SpawnPillarBlockEntity entity) {
+    private static void spawnPulsingParticles(ServerWorld world, ArrayList<SpawnPillarBlockEntity> list, int spawnTickCounter) {
+        if (list.isEmpty()) return;
 
+        float delta = (float) (spawnTickCounter - pulsingParticlesStart) / (pulsingParticlesEnd - pulsingParticlesStart);
+
+        for (SpawnPillarBlockEntity entity : list) {
+            if (entity == null) continue;
+
+            BlockPos origin = entity.getPos();
+
+            if (delta < 1f) {
+                int particleCount = 24; // Points on the Circle
+
+                for (int i = 0; i < particleCount; i++) {
+                    double angle = (2 * Math.PI / particleCount) * i;
+                    double radius = 0.85;
+
+                    // Compute particle position on circle
+                    double x = origin.getX() + 0.5 + radius * Math.cos(angle);
+                    double y = origin.getY();
+                    double z = origin.getZ() + 0.5 + radius * Math.sin(angle);
+
+                    // Spawn particle
+                    world.spawnParticles(
+                            ParticleTypes.DRIPPING_LAVA,
+                            x, y, z,
+                            1, // count
+                            0, 0, 0, // spread
+                            0        // speed
+                    );
+                }
+            }
+            if (delta >= 0.2f) {
+                // do something else
+            }
+        }
     }
 
     private static void spawnParticleRays(ServerWorld world, BlockPos pos0, int spawnTickCounter) {
@@ -130,25 +176,57 @@ public class SpawnAnimation {
         spawnParticlesForDirection(world, spawnTickCounter, xzPos, -1, -1);
     }
 
-    protected static void resetSpawnPillars(ServerWorld world, BlockPos block0Pos) {
-        // Define relative positions of the 4 pillars
-        BlockPos[] positions = {
-                block0Pos,
-                block0Pos.add(3, 0, 0),
-                block0Pos.add(0, 0, 3),
-                block0Pos.add(3, 0, 3)
-        };
+    protected static void resetSpawnPillarsWithoutInventory(ServerWorld world, SpawnPillarBlockEntity block0Entity) {
+        ArrayList<SpawnPillarBlockEntity> list = SpawnPillarLogic.getAllPillarEntities(world, block0Entity);
 
         // Process each pillar
-        for (int i = 0; i < positions.length; i++) {
-            BlockPos pos = positions[i];
-            SpawnPillarBlockEntity blockEntity = (SpawnPillarBlockEntity) world.getBlockEntity(pos);
+        for (int i = 0; i < list.size(); i++) {
+            SpawnPillarBlockEntity blockEntity = list.get(i);
+
+            if (blockEntity == null) continue;
+
+            BlockPos pos = blockEntity.getPos();
             BlockState blockState = world.getBlockState(pos);
 
-            if (blockEntity != null) {
-                blockEntity.setStack(0, ItemStack.EMPTY); // Clear Spawn Shard
-                SpawnPillarBlock.syncAndMarkBlock(world, blockEntity, pos, blockState); // Client Server Sync
+            blockEntity.setX_render_sign(0);
+            blockEntity.setZ_render_sign(0);
+
+            blockEntity.setXItemRenderOffset(0);
+            blockEntity.setYItemRenderOffset(0);
+            blockEntity.setZItemRenderOffset(0);
+
+
+            // Update block states
+            if (i == 0) {
+                trySetBlockState(world, pos, SpawnPillarBlock.RUNNING_LOGIC, false);
+                trySetBlockState(world, pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, false);
             }
+            blockEntity.resetSpawnTickCounter();
+            world.updateListeners(pos, blockState, world.getBlockState(pos), Block.NOTIFY_ALL);
+        }
+    }
+
+    protected static void resetSpawnPillarsWithInventory(ServerWorld world, SpawnPillarBlockEntity block0Entity) {
+        ArrayList<SpawnPillarBlockEntity> list = SpawnPillarLogic.getAllPillarEntities(world, block0Entity);
+
+        // Process each pillar
+        for (int i = 0; i < list.size(); i++) {
+            SpawnPillarBlockEntity blockEntity = list.get(i);
+
+            if (blockEntity == null) continue;
+
+            BlockPos pos = blockEntity.getPos();
+            BlockState blockState = world.getBlockState(pos);
+
+            blockEntity.setX_render_sign(0);
+            blockEntity.setZ_render_sign(0);
+
+            blockEntity.setXItemRenderOffset(0);
+            blockEntity.setYItemRenderOffset(0);
+            blockEntity.setZItemRenderOffset(0);
+
+            blockEntity.setStack(0, ItemStack.EMPTY); // Clear Spawn Shard
+            SpawnPillarBlock.syncAndMarkBlock(world, blockEntity, pos, blockState); // Client Server Sync
 
             // Update block states
             if (i == 0) { // Special handling for the first block
@@ -163,6 +241,7 @@ public class SpawnAnimation {
                 //Leave it LOCKED so you can only use them once, leaving this in for further Development
                 trySetBlockState(world, pos, SpawnPillarBlock.LOCKED, false);
             }
+            blockEntity.resetSpawnTickCounter();
             world.updateListeners(pos, blockState, world.getBlockState(pos), Block.NOTIFY_ALL);
         }
     }
@@ -171,7 +250,6 @@ public class SpawnAnimation {
         if (list.isEmpty()) return;
 
         float multiplier = 1.5f;
-
         float delta = (float) (spawnTickCounter - itemRenderTranslationStart) / (itemRenderTranslationEnd - itemRenderTranslationStart) * multiplier;
 
 

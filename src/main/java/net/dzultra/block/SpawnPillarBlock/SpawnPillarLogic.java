@@ -34,9 +34,8 @@ public class SpawnPillarLogic {
         if (state.get(SpawnPillarBlock.RUNNING_LOGIC) && !world.isClient()) { //
             if (checkIfPillarsExist(world, spawnPillarBlockEntity)) {
                 SpawnAnimation.tickBossSpawnAnimation(((ServerWorld) world), state, spawnPillarBlockEntity, pos);
-            } else {
-                SpawnAnimation.trySetBlockState((ServerWorld) world, pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, false);
-                SpawnAnimation.resetSpawnPillars((ServerWorld) world, spawnPillarBlockEntity.getPos());
+            } else { // Executed if a non-anchor pillar is broken mid-animation
+                SpawnAnimation.resetSpawnPillarsWithoutInventory((ServerWorld) world, spawnPillarBlockEntity);
             }
         }
 
@@ -49,7 +48,7 @@ public class SpawnPillarLogic {
     // -- Logic Functions --
 
     // Checks whether all needed positions are an ACTIVATED Spawn Pillar
-    private static boolean shouldStartBossSpawn(World world, BlockState state, SpawnPillarBlockEntity spawnPillarBlockEntity) {
+    protected static boolean shouldStartBossSpawn(World world, BlockState state, SpawnPillarBlockEntity spawnPillarBlockEntity) {
         if (world.isClient()) return false;
         // Server Side
         BlockPos block0Pos = spawnPillarBlockEntity.getPos();
@@ -107,7 +106,7 @@ public class SpawnPillarLogic {
     }
 
     protected static ArrayList<SpawnPillarBlockEntity> getAllPillarEntities(World world, SpawnPillarBlockEntity spawnPillarBlockEntity) {
-        if (world.isClient() || !checkIfPillarsExist(world, spawnPillarBlockEntity)) return new ArrayList<SpawnPillarBlockEntity>();
+        if (world.isClient()) return new ArrayList<>();
         // Server Side
         BlockPos block0Pos = spawnPillarBlockEntity.getPos();
         BlockPos block1Pos = block0Pos.add(3, 0, 0);
@@ -127,7 +126,7 @@ public class SpawnPillarLogic {
     // Starting Boss Spawn in terms of setting "running_logic" on one Pillar true
     private static void startBossSpawn(World world, SpawnPillarBlockEntity spawnPillarBlockEntity, BlockPos block0Pos) {
         // Server Side
-        TrialChamberBossMod.LOGGER.info("Started Boss Spawn: " + spawnPillarBlockEntity.getPos());
+        TrialChamberBossMod.LOGGER.info("Started Boss Spawn: {}", spawnPillarBlockEntity.getPos());
 
         BlockPos block1Pos = block0Pos.add(3, 0, 0);
         BlockPos block2Pos = block0Pos.add(0, 0, 3);

@@ -74,6 +74,11 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
             if (blockEntity instanceof SpawnPillarBlockEntity spawnPillarBlockEntity) {
                 ItemScatterer.spawn(world, pos, spawnPillarBlockEntity);
                 world.updateComparators(pos, this);
+                if (!world.isClient()) {
+                    if (spawnPillarBlockEntity.isRunningLogic()) {
+                        SpawnAnimation.resetSpawnPillarsWithoutInventory((ServerWorld) world, spawnPillarBlockEntity);
+                    }
+                }
             }
             super.onStateReplaced(state, world, pos, newState, moved);
         }

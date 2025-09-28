@@ -115,6 +115,10 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         this.markDirty();
     }
 
+    public boolean isRunningLogic() {
+        return this.getSpawnTickCounter() > 0;
+    }
+
     @Override
     public DefaultedList<ItemStack> getItems() {
         return inventory;
