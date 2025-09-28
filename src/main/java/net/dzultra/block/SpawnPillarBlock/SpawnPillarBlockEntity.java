@@ -75,10 +75,12 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         this.markDirty();
         return x_item_render_offset;
     }
+
     public float getYItemRenderOffset() {
         this.markDirty();
         return y_item_render_offset;
     }
+
     public float getZItemRenderOffset() {
         this.markDirty();
         return z_item_render_offset;
@@ -88,10 +90,12 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         x_item_render_offset = amount;
         this.markDirty();
     }
+
     public void setYItemRenderOffset(float amount) {
         y_item_render_offset = amount;
         this.markDirty();
     }
+
     public void setZItemRenderOffset(float amount) {
         z_item_render_offset = amount;
         this.markDirty();
@@ -101,6 +105,7 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         this.markDirty();
         return x_render_sign;
     }
+
     public int getZ_render_sign() {
         this.markDirty();
         return z_render_sign;
@@ -110,6 +115,7 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         x_render_sign = amount;
         this.markDirty();
     }
+
     public void setZ_render_sign(int amount) {
         z_render_sign = amount;
         this.markDirty();

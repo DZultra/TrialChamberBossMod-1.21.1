@@ -98,11 +98,11 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
             return ItemActionResult.FAIL;
         }
 
-        if(state.get(SpawnPillarBlock.LOCKED)) {
+        if (state.get(SpawnPillarBlock.LOCKED)) {
             return ItemActionResult.CONSUME;
         }
 
-        if (stack.getItem() != ModItems.SPAWN_SHARD && !stack.isEmpty()){
+        if (stack.getItem() != ModItems.SPAWN_SHARD && !stack.isEmpty()) {
             return ItemActionResult.CONSUME;
         }
 
@@ -115,9 +115,7 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
             world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 2f);
 
             syncAndMarkBlock(world, spawnPillarBlockEntity, pos, state);
-        }
-
-        else if (!spawnPillarBlockEntity.isEmpty() && stack.isEmpty() && !player.isSneaking()) {
+        } else if (!spawnPillarBlockEntity.isEmpty() && stack.isEmpty() && !player.isSneaking()) {
             // Block has Item & Hand Empty -> Item from Block into Hand
             ItemStack stackOnSpawnPillar = spawnPillarBlockEntity.getItems().getFirst(); // Item on Block
             player.setStackInHand(Hand.MAIN_HAND, stackOnSpawnPillar); // Give Item on Block to Player
@@ -127,14 +125,10 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
             world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 1f);
 
             syncAndMarkBlock(world, spawnPillarBlockEntity, pos, state);
-        }
-
-        else if (spawnPillarBlockEntity.isEmpty() && stack.isEmpty()) {
+        } else if (spawnPillarBlockEntity.isEmpty() && stack.isEmpty()) {
             // Block Empty & Hand Empty -> Do nothing
             return ItemActionResult.CONSUME;
-        }
-
-        else if (!spawnPillarBlockEntity.isEmpty() && !stack.isEmpty()) {
+        } else if (!spawnPillarBlockEntity.isEmpty() && !stack.isEmpty()) {
             // Block has Item & Hand has Item -> If same ItemStack increment Stack in Hand, if not same ItemStack do nth
             if (stack.isOf(spawnPillarBlockEntity.getStack(0).getItem()) && stack.getCount() < stack.getMaxCount()) {
                 spawnPillarBlockEntity.setStack(0, ItemStack.EMPTY); // Clear Block

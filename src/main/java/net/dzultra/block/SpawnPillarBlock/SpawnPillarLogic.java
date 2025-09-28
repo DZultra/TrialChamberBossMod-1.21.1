@@ -40,7 +40,7 @@ public class SpawnPillarLogic {
         }
 
         // Check whether the Boss Spawning should start and do so if it should
-        if(shouldStartBossSpawn(world, state, spawnPillarBlockEntity) && !world.isClient()){
+        if (shouldStartBossSpawn(world, state, spawnPillarBlockEntity) && !world.isClient()) {
             startBossSpawn(world, spawnPillarBlockEntity, spawnPillarBlockEntity.getPos());
         }
     }
@@ -71,21 +71,17 @@ public class SpawnPillarLogic {
         }
 
         // Did the spawning already begin? If so, don't start spawning again
-        if(state.get(SpawnPillarBlock.RUNNING_LOGIC)) {
+        if (state.get(SpawnPillarBlock.RUNNING_LOGIC)) {
             //TrialChamberBossMod.LOGGER.info("[TCB] hasStartedSpawning: " + bossSpawnPillarBlockEntity.pos);
             return false;
         }
 
         // Are the Spawn Pillars ACTIVATED aka have a Spawn Shard on them? If so, continue and return true
-        if (!(block0.get(SpawnPillarBlock.ACTIVATED)
-                        && block1.get(SpawnPillarBlock.ACTIVATED)
-                        && block2.get(SpawnPillarBlock.ACTIVATED)
-                        && block3.get(SpawnPillarBlock.ACTIVATED))
-        ) {
-            //TrialChamberBossMod.LOGGER.info("[TCB] Required Blocks aren't activated: " + bossSpawnPillarBlockEntity.pos);
-            return false;
-        }
-        return true;
+        //TrialChamberBossMod.LOGGER.info("[TCB] Required Blocks aren't activated: " + bossSpawnPillarBlockEntity.pos);
+        return block0.get(SpawnPillarBlock.ACTIVATED)
+                && block1.get(SpawnPillarBlock.ACTIVATED)
+                && block2.get(SpawnPillarBlock.ACTIVATED)
+                && block3.get(SpawnPillarBlock.ACTIVATED);
     }
 
     protected static boolean checkIfPillarsExist(World world, SpawnPillarBlockEntity spawnPillarBlockEntity) {
@@ -164,7 +160,7 @@ public class SpawnPillarLogic {
             double velocityZ = ThreadLocalRandom.current().nextDouble(-0.02, 0.02);
 
             Vec3d velocity = new Vec3d(velocityX, velocityY, velocityZ);
-            Vec3d position =  new Vec3d(
+            Vec3d position = new Vec3d(
                     pos.getX() + 0.5 + (blockEntity.getXItemRenderOffset() * blockEntity.getX_render_sign()),
                     pos.getY() + 1.5 + blockEntity.getYItemRenderOffset(),
                     pos.getZ() + 0.5 + (blockEntity.getZItemRenderOffset() * blockEntity.getZ_render_sign())
@@ -176,7 +172,7 @@ public class SpawnPillarLogic {
         }
     }
 
-    private static <T extends ParticleEffect> void spawnParticle (ServerWorld world, T p, Vec3d pos, Vec3d velocity, int amount, double speed) {
+    private static <T extends ParticleEffect> void spawnParticle(ServerWorld world, T p, Vec3d pos, Vec3d velocity, int amount, double speed) {
         world.spawnParticles(p,
                 pos.getX(),
                 pos.getY(),

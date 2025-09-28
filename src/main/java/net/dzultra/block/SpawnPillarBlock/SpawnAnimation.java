@@ -301,7 +301,7 @@ public class SpawnAnimation {
         }
     }
 
-    private static void setRenderSigns(ServerWorld world, SpawnPillarBlockEntity spawnPillarBlockEntity){
+    private static void setRenderSigns(ServerWorld world, SpawnPillarBlockEntity spawnPillarBlockEntity) {
         ArrayList<SpawnPillarBlockEntity> pillars = SpawnPillarLogic.getAllPillarEntities(world, spawnPillarBlockEntity);
         if (pillars.get(0) != null) {
             pillars.get(0).setX_render_sign(1);

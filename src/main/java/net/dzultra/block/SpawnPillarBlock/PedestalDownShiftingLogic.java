@@ -19,16 +19,16 @@ public class PedestalDownShiftingLogic {
         BlockPos pos = blockEntity.getPos();
 
         // I hate myself
-        BlockPos pos1 = pos.add(3, 0 ,3);
-        BlockPos pos2 = pos.add(3, 0 ,0);
-        BlockPos pos3 = pos.add(0, 0 ,3);
-        List<BlockPos> additionalBlocks = List.of(pos.add(0,-1,-2), pos.add(0,0,-2), pos.add(0,-1,-3), pos.add(0,0,-3), pos.add(-2,-2,0), pos.add(-2,-1,0), pos.add(-3,-2,0), pos.add(-3,-1,0), pos1.add(0,-1,2), pos1.add(0,0,2), pos1.add(0,-1,3), pos1.add(0,0,3), pos1.add(2,-2,0), pos1.add(2,-1,0), pos1.add(3,-2,0), pos1.add(3,-1,0), pos2.add(2,-1,0), pos2.add(2,0,0), pos2.add(3,-1,0), pos2.add(3,0,0), pos2.add(0,-2,-2), pos2.add(0,-1,-2), pos2.add(0,-2,-3), pos2.add(0,-1,-3), pos3.add(-2,-1,0), pos3.add(-2,0,0), pos3.add(-3,-1,0), pos3.add(-3,0,0), pos3.add(0,-2,2), pos3.add(0,-1,2), pos3.add(0,-2,3), pos3.add(0,-1,3));
+        BlockPos pos1 = pos.add(3, 0, 3);
+        BlockPos pos2 = pos.add(3, 0, 0);
+        BlockPos pos3 = pos.add(0, 0, 3);
+        List<BlockPos> additionalBlocks = List.of(pos.add(0, -1, -2), pos.add(0, 0, -2), pos.add(0, -1, -3), pos.add(0, 0, -3), pos.add(-2, -2, 0), pos.add(-2, -1, 0), pos.add(-3, -2, 0), pos.add(-3, -1, 0), pos1.add(0, -1, 2), pos1.add(0, 0, 2), pos1.add(0, -1, 3), pos1.add(0, 0, 3), pos1.add(2, -2, 0), pos1.add(2, -1, 0), pos1.add(3, -2, 0), pos1.add(3, -1, 0), pos2.add(2, -1, 0), pos2.add(2, 0, 0), pos2.add(3, -1, 0), pos2.add(3, 0, 0), pos2.add(0, -2, -2), pos2.add(0, -1, -2), pos2.add(0, -2, -3), pos2.add(0, -1, -3), pos3.add(-2, -1, 0), pos3.add(-2, 0, 0), pos3.add(-3, -1, 0), pos3.add(-3, 0, 0), pos3.add(0, -2, 2), pos3.add(0, -1, 2), pos3.add(0, -2, 3), pos3.add(0, -1, 3));
 
         shiftAreaDownByOne(world, blockEntity.getPos(), additionalBlocks);
     }
 
     public static void shiftAreaDownByOne(ServerWorld world, BlockPos origin, List<BlockPos> additionalBlocks) {
-        origin = origin.add(1,0,1);
+        origin = origin.add(1, 0, 1);
 
         // Define area boundaries
         int minX = origin.getX() - 2;
@@ -110,8 +110,7 @@ public class PedestalDownShiftingLogic {
         if (blockEntity instanceof SpawnPillarBlockEntity) {
             world.removeBlockEntity(pos);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
-        }
-        else if (blockEntity instanceof Inventory) {
+        } else if (blockEntity instanceof Inventory) {
             world.breakBlock(pos, true);
         } else {
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
@@ -155,8 +154,7 @@ public class PedestalDownShiftingLogic {
         if (blockEntity instanceof SpawnPillarBlockEntity) {
             world.removeBlockEntity(pos);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
-        }
-        else if (blockEntity instanceof Inventory) {
+        } else if (blockEntity instanceof Inventory) {
             world.breakBlock(pos, true);
         } else {
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
