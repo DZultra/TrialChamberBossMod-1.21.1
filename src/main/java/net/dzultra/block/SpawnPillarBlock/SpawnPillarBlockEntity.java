@@ -56,14 +56,19 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         this.markDirty();
     }
 
-    public int getAndIncrementSpawnTickCounter() {
+    public void incrementSpawnTickCounter() {
+        spawnTickCounter++;
         this.markDirty();
-        return spawnTickCounter++;
     }
 
     public int getSpawnTickCounter() {
         this.markDirty();
         return spawnTickCounter;
+    }
+
+    public void setSpawnTickCounter(int amount) {
+        spawnTickCounter = amount;
+        this.markDirty();
     }
 
     public void resetSpawnTickCounter() {
@@ -182,7 +187,14 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
 
     public void syncData() {
         if (this.getWorld() != null && !this.getWorld().isClient()) {
-            SpawnPillarBlock.sendSyncPacket(this.getWorld(), this.getPos(), this.getItems(), this.getXItemRenderOffset(), this.getYItemRenderOffset(), this.getZItemRenderOffset(), this.getX_render_sign(), this.getZ_render_sign());
+            SpawnPillarBlock.sendSyncPacket(
+                    this.getWorld(),
+                    this.getPos(),
+                    this.getItems(),
+                    this.getXItemRenderOffset(), this.getYItemRenderOffset(), this.getZItemRenderOffset(),
+                    this.getX_render_sign(), this.getZ_render_sign(),
+                    this.getSpawnTickCounter()
+            );
         }
     }
 }

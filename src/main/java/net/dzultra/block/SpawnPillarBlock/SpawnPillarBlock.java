@@ -27,6 +27,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProvider {
     public static final BooleanProperty ACTIVATED = BooleanProperty.of("activated");
@@ -151,7 +152,7 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
         world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
     }
 
-    public static void sendSyncPacket(World world, BlockPos blockpos, DefaultedList<ItemStack> inventory, float xItemRenderOffset, float yItemRenderOffset, float zItemRenderOffset, int xItemRenderSign, int zItemRenderSign) {
+    public static void sendSyncPacket(World world, BlockPos blockpos, DefaultedList<ItemStack> inventory, float xItemRenderOffset, float yItemRenderOffset, float zItemRenderOffset, int xItemRenderSign, int zItemRenderSign, int spawnTickCounter) {
         if (world.isClient()) return;
 
         int itemRenderSign = 0;
@@ -163,7 +164,9 @@ public class SpawnPillarBlock extends BlockWithEntity implements BlockEntityProv
             itemRenderSign = 3;
         }
 
-        SyncTCBSpawnPillarBlockEntityS2CPayload payload = new SyncTCBSpawnPillarBlockEntityS2CPayload(blockpos, inventory, xItemRenderOffset, yItemRenderOffset, zItemRenderOffset, itemRenderSign);
+        Vector3f itemRenderOffset = new Vector3f(xItemRenderOffset, yItemRenderOffset, zItemRenderOffset);
+
+        SyncTCBSpawnPillarBlockEntityS2CPayload payload = new SyncTCBSpawnPillarBlockEntityS2CPayload(blockpos, inventory, itemRenderOffset, itemRenderSign, spawnTickCounter);
 
         for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.world((ServerWorld) world)) {
             ServerPlayNetworking.send(serverPlayerEntity, payload);

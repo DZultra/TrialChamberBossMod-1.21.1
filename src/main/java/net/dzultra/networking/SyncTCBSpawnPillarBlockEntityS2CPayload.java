@@ -9,9 +9,9 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import org.joml.Vector3f;
 
-public record SyncTCBSpawnPillarBlockEntityS2CPayload(BlockPos blockPos, DefaultedList<ItemStack> inventory, double xItemRenderOffset, double yItemRenderOffset, double zItemRenderOffset, int itemRenderSign) implements CustomPayload {
+public record SyncTCBSpawnPillarBlockEntityS2CPayload(BlockPos blockPos, DefaultedList<ItemStack> inventory, Vector3f itemRenderOffset, int itemRenderSign, int spawnTickCounter) implements CustomPayload {
     public static final Identifier SYNC_SPAWN_PILLAR_BLOCK_ENTITY_PAYLOAD_ID = Identifier.of(TrialChamberBossMod.MOD_ID, "sync_spawn_pillar_block_entity");
     public static final CustomPayload.Id<SyncTCBSpawnPillarBlockEntityS2CPayload> ID = new CustomPayload.Id<>(SYNC_SPAWN_PILLAR_BLOCK_ENTITY_PAYLOAD_ID);
 
@@ -46,12 +46,11 @@ public record SyncTCBSpawnPillarBlockEntityS2CPayload(BlockPos blockPos, Default
 
     // Define the PacketCodec
     public static final PacketCodec<RegistryByteBuf, SyncTCBSpawnPillarBlockEntityS2CPayload> CODEC = PacketCodec.tuple(
-            BlockPos.PACKET_CODEC, SyncTCBSpawnPillarBlockEntityS2CPayload::blockPos, // Handle BlockPos
-            ITEM_STACK_LIST_CODEC, SyncTCBSpawnPillarBlockEntityS2CPayload::inventory, // Handle DefaultedList<ItemStack>
-            PacketCodecs.DOUBLE, SyncTCBSpawnPillarBlockEntityS2CPayload::xItemRenderOffset,
-            PacketCodecs.DOUBLE, SyncTCBSpawnPillarBlockEntityS2CPayload::yItemRenderOffset,
-            PacketCodecs.DOUBLE, SyncTCBSpawnPillarBlockEntityS2CPayload::xItemRenderOffset,
+            BlockPos.PACKET_CODEC, SyncTCBSpawnPillarBlockEntityS2CPayload::blockPos,
+            ITEM_STACK_LIST_CODEC, SyncTCBSpawnPillarBlockEntityS2CPayload::inventory,
+            PacketCodecs.VECTOR3F, SyncTCBSpawnPillarBlockEntityS2CPayload::itemRenderOffset,
             PacketCodecs.INTEGER, SyncTCBSpawnPillarBlockEntityS2CPayload::itemRenderSign,
+            PacketCodecs.INTEGER, SyncTCBSpawnPillarBlockEntityS2CPayload::spawnTickCounter,
             SyncTCBSpawnPillarBlockEntityS2CPayload::new // Constructor
     );
 

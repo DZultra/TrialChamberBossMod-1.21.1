@@ -20,9 +20,7 @@ public class TrialChamberBossModClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(SyncTCBSpawnPillarBlockEntityS2CPayload.ID, (payload, context) -> {
             ClientWorld world = context.client().world;
 
-            if (world == null) {
-                return; // Ensure the world is not null
-            }
+            if (world == null) return;
 
             // Retrieve the BlockEntity at the specified BlockPos
             BlockEntity blockEntity = world.getBlockEntity(payload.blockPos());
@@ -49,11 +47,12 @@ public class TrialChamberBossModClient implements ClientModInitializer {
                 spawnPillarBlockEntity.setX_render_sign(xItemRenderSign);
                 spawnPillarBlockEntity.setZ_render_sign(zItemRenderSign);
 
-                spawnPillarBlockEntity.setXItemRenderOffset((float) payload.xItemRenderOffset());
-                spawnPillarBlockEntity.setYItemRenderOffset((float) payload.yItemRenderOffset());
-                spawnPillarBlockEntity.setZItemRenderOffset((float) payload.zItemRenderOffset());
+                spawnPillarBlockEntity.setXItemRenderOffset(payload.itemRenderOffset().x());
+                spawnPillarBlockEntity.setYItemRenderOffset(payload.itemRenderOffset().y());
+                spawnPillarBlockEntity.setZItemRenderOffset(payload.itemRenderOffset().z());
 
-                // Mark the BlockEntity for rerendering (optional, if needed)
+                spawnPillarBlockEntity.setSpawnTickCounter(payload.spawnTickCounter());
+
                 world.updateListeners(payload.blockPos(), blockEntity.getCachedState(), blockEntity.getCachedState(), Block.NOTIFY_ALL);
             }
         });

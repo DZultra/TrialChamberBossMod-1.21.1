@@ -3,6 +3,7 @@ package net.dzultra.block.SpawnPillarBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.OutlineVertexConsumerProvider;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
@@ -11,6 +12,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -38,7 +40,6 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
     private void renderItemAboveBlock(MatrixStack matrices, VertexConsumerProvider vertexConsumers, SpawnPillarBlockEntity entity) {
         ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
         ItemStack stack = entity.getStack(0);
-        BlockPos entity_pos = entity.getPos();
 
         float x_item_offset = entity.getXItemRenderOffset() * entity.getX_render_sign();
         float y_item_offset = entity.getYItemRenderOffset();
@@ -50,10 +51,44 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getRenderingRotation())); // Rotation
 
         if (entity.getWorld() != null) {
-            itemRenderer.renderItem(stack, ModelTransformationMode.GUI, getLightLevel(entity.getWorld(),
-                    entity_pos), OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), 1);
+            MinecraftClient client = MinecraftClient.getInstance();
+            OutlineVertexConsumerProvider outlineProvider = client.getBufferBuilders().getOutlineVertexConsumers();
+
+            int ticks = entity.getSpawnTickCounter();
+
+            // Blink orange between 290–340
+            if (ticks >= 290 && ticks <= 340) {
+                // Every 3 ticks
+                boolean blinkOn = ((ticks / 3) % 2) == 0;
+
+                if (blinkOn) {
+                    outlineProvider.setColor(255, 255, 255, 0); // orange outline
+                    renderItem(itemRenderer, stack, matrices, outlineProvider, entity);
+                } else {
+                    renderItem(itemRenderer, stack, matrices, vertexConsumers, entity);
+                }
+            } else if (ticks > 340) {
+                outlineProvider.setColor(255, 255, 255, 0);
+                renderItem(itemRenderer, stack, matrices, outlineProvider, entity);
+            } else {
+                renderItem(itemRenderer, stack, matrices, vertexConsumers, entity);
+            }
         }
         matrices.pop();
+    }
+
+    private void renderItem(ItemRenderer itemRenderer, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertexConsumers, SpawnPillarBlockEntity entity) {
+        if (entity.getWorld() == null) return;
+        itemRenderer.renderItem(
+                stack,
+                ModelTransformationMode.GUI,
+                getLightLevel(entity.getWorld(), entity.getPos()),
+                OverlayTexture.DEFAULT_UV,
+                matrices,
+                vertexConsumers,
+                entity.getWorld(),
+                1
+        );
     }
 
     private void renderAllBeams(MatrixStack matrices, VertexConsumerProvider vertexConsumers, SpawnPillarBlockEntity entity, float tickDelta) {

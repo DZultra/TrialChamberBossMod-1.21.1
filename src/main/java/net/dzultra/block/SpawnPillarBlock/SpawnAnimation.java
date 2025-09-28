@@ -25,7 +25,7 @@ public class SpawnAnimation {
     private static final int maxSpawnTickCounter = 480;
 
     private static final int pulsingParticlesStart = 50;
-    private static final int pulsingParticlesEnd = 150;
+    private static final int pulsingParticlesEnd = 440;
 
     private static final int particleRaysStart = 160;
     private static final int particleRaysEnd = 340;
@@ -72,6 +72,10 @@ public class SpawnAnimation {
                     (tickData) -> spawnBossEntity(tickData.world, tickData.pos)
             ),
             new TickAction(
+                    tick -> tick == 380,
+                    (tickData) -> clearItems(tickData.world, SpawnPillarLogic.getAllPillarEntities(tickData.world, tickData.blockEntity))
+            ),
+            new TickAction(
                     tick -> tick == 390,
                     (tickData) -> PedestalDownShiftingLogic.shiftPedestalDown(tickData.world, tickData.blockEntity)
             ),
@@ -104,7 +108,10 @@ public class SpawnAnimation {
         // Server Side
         // Only Counts upwards on the Anchor SpawnPillar
         // Different for each SpawnPillar Group
-        int spawnTickCounter = spawnPillarBlockEntity.getAndIncrementSpawnTickCounter();
+        int spawnTickCounter = spawnPillarBlockEntity.getSpawnTickCounter();
+
+        SpawnPillarLogic.getAllPillarEntities(world, spawnPillarBlockEntity).forEach(SpawnPillarBlockEntity::incrementSpawnTickCounter);
+
 
         TickData tickData = new TickData(world, pos, state, spawnPillarBlockEntity, spawnTickCounter);
         actions.forEach(action -> {
@@ -136,18 +143,26 @@ public class SpawnAnimation {
                     double y = origin.getY();
                     double z = origin.getZ() + 0.5 + radius * Math.sin(angle);
 
-                    // Spawn particle
-                    world.spawnParticles(
-                            ParticleTypes.DRIPPING_LAVA,
-                            x, y, z,
-                            1, // count
-                            0, 0, 0, // spread
-                            0        // speed
-                    );
+                    if (delta < 0.075f) {
+                        world.spawnParticles(
+                                ParticleTypes.DRIPPING_LAVA,
+                                x, y, z,
+                                1, // count
+                                0, 0, 0, // spread
+                                0        // speed
+                        );
+                    }
+
+                    if (i % 3 == 0 && delta > 0.2f && delta < 0.8f) {
+                        world.spawnParticles(
+                                ParticleTypes.END_ROD,
+                                x, y + 0.55, z,
+                                1, // count
+                                0, 0, 0, // spread
+                                0        // speed
+                        );
+                    }
                 }
-            }
-            if (delta >= 0.2f) {
-                // do something else
             }
         }
     }
@@ -249,7 +264,7 @@ public class SpawnAnimation {
     private static void runItemRenderTranslations(ArrayList<SpawnPillarBlockEntity> list, int spawnTickCounter) {
         if (list.isEmpty()) return;
 
-        float multiplier = 1.5f;
+        float multiplier = 1.3f;
         float delta = (float) (spawnTickCounter - itemRenderTranslationStart) / (itemRenderTranslationEnd - itemRenderTranslationStart) * multiplier;
 
 
@@ -336,6 +351,17 @@ public class SpawnAnimation {
 
         creeper.refreshPositionAndAngles(spawnPos, 360F, 0);
         world.spawnEntity(creeper);
+    }
+
+    private static void clearItems(ServerWorld world, ArrayList<SpawnPillarBlockEntity> list) {
+        if (list.isEmpty()) return;
+
+        for (SpawnPillarBlockEntity entity : list) {
+            if (entity == null) continue;
+            entity.setStack(0, ItemStack.EMPTY);
+            trySetBlockState(world, entity.getPos(), SpawnPillarBlock.ACTIVATED, false);
+            SpawnPillarBlock.syncAndMarkBlock(world, entity, entity.getPos(), entity.getCachedState());
+        }
     }
 
     record TickData(ServerWorld world, BlockPos pos, BlockState state, SpawnPillarBlockEntity blockEntity,
