@@ -4,6 +4,7 @@ import net.dzultra.block.ModBlocks;
 import net.dzultra.item.ModItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
+import net.minecraft.block.Blocks;
 import net.minecraft.data.client.*;
 import net.minecraft.util.Identifier;
 
@@ -16,8 +17,22 @@ public class ModModelProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-        //blockStateModelGenerator.registerSingleton(ModBlocks.BOSS_SPAWN_PILLAR, TexturedModel.CUBE_BOTTOM_TOP);
+        BlockStateModelGenerator.BlockTexturePool reinforced_copper_pool = blockStateModelGenerator.registerCubeAllModelTexturePool(Blocks.CUT_COPPER);
+
         blockStateModelGenerator.registerSingleton(ModBlocks.SPAWN_PILLAR, TexturedModel.CUBE_BOTTOM_TOP);
+
+        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.REINFORCED_OXIDIZED_COPPER_BLOCK);
+        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.REINFORCED_COPPER_BLOCK);
+        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.REINFORCED_TUFF_BRICKS);
+        blockStateModelGenerator.registerSingleton(ModBlocks.REINFORCED_CHISELED_TUFF_BRICKS, TexturedModel.CUBE_COLUMN);
+        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.REINFORCED_POLISHED_TUFF);
+        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.REINFORCED_OXIDIZED_CUT_COPPER);
+
+        blockStateModelGenerator.registerCopperBulb(ModBlocks.REINFORCED_COPPER_BULB);
+
+        blockStateModelGenerator.registerStateWithModelReference(ModBlocks.REINFORCED_CHAIN, Blocks.CHAIN);
+
+        reinforced_copper_pool.stairs(ModBlocks.REINFORCED_CUT_COPPER_STAIRS);
     }
 
     @Override
@@ -26,5 +41,8 @@ public class ModModelProvider extends FabricModelProvider {
 
         itemModelGenerator.register(ModItems.TRIAL_CHAMBER_BOSS_SPAWN_EGG,
                 new Model(Optional.of(Identifier.of("item/template_spawn_egg")), Optional.empty()));
+
+        itemModelGenerator.register(ModBlocks.REINFORCED_CHAIN.asItem(),
+                new Model(Optional.of(Identifier.of("item/chain")), Optional.empty()));
     }
 }

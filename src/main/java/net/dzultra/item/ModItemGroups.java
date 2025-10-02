@@ -20,6 +20,15 @@ public class ModItemGroups {
                         entries.add(ModBlocks.SPAWN_PILLAR);
                         entries.add(ModItems.TRIAL_CHAMBER_BOSS_SPAWN_EGG);
                         entries.add(ModItems.SPAWN_SHARD);
+                        entries.add(ModBlocks.REINFORCED_COPPER_BLOCK);
+                        entries.add(ModBlocks.REINFORCED_OXIDIZED_COPPER_BLOCK);
+                        entries.add(ModBlocks.REINFORCED_OXIDIZED_CUT_COPPER);
+                        entries.add(ModBlocks.REINFORCED_CUT_COPPER_STAIRS);
+                        entries.add(ModBlocks.REINFORCED_COPPER_BULB);
+                        entries.add(ModBlocks.REINFORCED_TUFF_BRICKS);
+                        entries.add(ModBlocks.REINFORCED_CHISELED_TUFF_BRICKS);
+                        entries.add(ModBlocks.REINFORCED_POLISHED_TUFF);
+                        entries.add(ModBlocks.REINFORCED_CHAIN);
                     }).build());
 
     public static void registerModItemGroups() {

@@ -47,7 +47,7 @@ public class SpawnAnimation {
             new TickAction(
                     tick -> tick >= pulsingParticlesStart && tick <= pulsingParticlesEnd,
                     (tickData) -> {
-                        spawnPulsingParticles(
+                        spawnCircleParticles(
                                 tickData.world,
                                 SpawnPillarLogic.getAllPillarEntities(tickData.world, tickData.blockEntity),
                                 tickData.spawnTickCounter
@@ -121,7 +121,7 @@ public class SpawnAnimation {
         });
     }
 
-    private static void spawnPulsingParticles(ServerWorld world, ArrayList<SpawnPillarBlockEntity> list, int spawnTickCounter) {
+    private static void spawnCircleParticles(ServerWorld world, ArrayList<SpawnPillarBlockEntity> list, int spawnTickCounter) {
         if (list.isEmpty()) return;
 
         float delta = (float) (spawnTickCounter - pulsingParticlesStart) / (pulsingParticlesEnd - pulsingParticlesStart);
