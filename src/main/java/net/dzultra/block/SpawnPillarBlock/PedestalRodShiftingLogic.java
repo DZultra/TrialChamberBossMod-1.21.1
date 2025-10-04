@@ -1,7 +1,6 @@
 package net.dzultra.block.SpawnPillarBlock;
 
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
@@ -31,11 +30,9 @@ public class PedestalRodShiftingLogic {
                 shiftBlockNegativeZ(world, pos.add(0, 0, -blockEntity.getPedestal_rods_offset()));
             }
 
-            world.getPlayers().forEach(p -> p.sendMessage(Text.literal("Offset: " + blockEntity.getPedestal_rods_offset()), false));
             blockEntity.incrementPedestal_rods_offset();
 
             if (blockEntity.getPedestal_rods_offset() == 5) {
-                world.getPlayers().forEach(p -> p.sendMessage(Text.literal("Set Offset=0 "), false));
                 blockEntity.setPedestal_rods_offset(0);
             }
         }
