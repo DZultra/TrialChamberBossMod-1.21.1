@@ -104,7 +104,6 @@ public class PedestalDownShiftingLogic {
     }
 
     private static void handleBottomLayerBlock(ServerWorld world, BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
         BlockEntity blockEntity = world.getBlockEntity(pos);
 
         if (blockEntity instanceof SpawnPillarBlockEntity) {
@@ -148,7 +147,6 @@ public class PedestalDownShiftingLogic {
     }
 
     private static void handleTopLayerBlock(ServerWorld world, BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
         BlockEntity blockEntity = world.getBlockEntity(pos);
 
         if (blockEntity instanceof SpawnPillarBlockEntity) {

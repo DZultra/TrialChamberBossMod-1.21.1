@@ -12,7 +12,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -114,6 +113,8 @@ public class SpawnPillarBlockEntityRenderer implements BlockEntityRenderer<Spawn
     }
 
     private void renderSingleBeam(MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickDelta, BlockEntity entity, BlockPos pos) {
+        if (entity.getWorld() == null) return;
+
         int maxY = getFirstNonAirBlockAboveY(pos, entity.getWorld());
         //TrialChamberBossMod.LOGGER.info("MaxY: {}", maxY);
         BeaconBlockEntityRenderer.renderBeam(
