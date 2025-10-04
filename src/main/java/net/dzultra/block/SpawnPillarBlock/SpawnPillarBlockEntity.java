@@ -26,6 +26,8 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
     private float z_item_render_offset = 0;
     private int x_render_sign = 0;
     private int z_render_sign = 0;
+    private int side_pillar_y = 0;
+    private int pedestal_rods_offset = 0;
 
     public SpawnPillarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SPAWN_PILLAR_BE, pos, state);
@@ -126,6 +128,36 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         this.markDirty();
     }
 
+    public int getSide_pillar_y() {
+        this.markDirty();
+        return side_pillar_y;
+    }
+
+    public void setSide_pillar_y(int amount) {
+        side_pillar_y = amount;
+        this.markDirty();
+    }
+
+    public void decrementSide_pillar_y() {
+        side_pillar_y--;
+        this.markDirty();
+    }
+
+    public int getPedestal_rods_offset() {
+        this.markDirty();
+        return pedestal_rods_offset;
+    }
+
+    public void setPedestal_rods_offset(int amount) {
+        pedestal_rods_offset = amount;
+        this.markDirty();
+    }
+
+    public void incrementPedestal_rods_offset() {
+        pedestal_rods_offset++;
+        this.markDirty();
+    }
+
     public boolean isRunningLogic() {
         return this.getSpawnTickCounter() > 0;
     }
@@ -143,10 +175,11 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         nbt.putInt("particleTickCounter", particleTickCounter);
         nbt.putInt("x_render_sign", x_render_sign);
         nbt.putInt("z_render_sign", z_render_sign);
+        nbt.putInt("side_pillar_y", side_pillar_y);
+        nbt.putInt("pedestal_rods_offset", pedestal_rods_offset);
         nbt.putFloat("x_item_render_offset", x_item_render_offset);
         nbt.putFloat("y_item_render_offset", y_item_render_offset);
         nbt.putFloat("z_item_render_offset", z_item_render_offset);
-
     }
 
     @Override
@@ -157,6 +190,8 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         particleTickCounter = nbt.getInt("particleTickCounter");
         x_render_sign = nbt.getInt("x_render_sign");
         z_render_sign = nbt.getInt("z_render_sign");
+        side_pillar_y = nbt.getInt("side_pillar_y");
+        pedestal_rods_offset = nbt.getInt("pedestal_rods_offset");
         x_item_render_offset = nbt.getFloat("x_item_render_offset");
         y_item_render_offset = nbt.getFloat("y_item_render_offset");
         z_item_render_offset = nbt.getFloat("z_item_render_offset");

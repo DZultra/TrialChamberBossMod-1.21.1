@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class SpawnAnimation {
-    private static final int maxSpawnTickCounter = 550;
+    private static final int maxSpawnTickCounter = 600;
 
     private static final int pulsingParticlesStart = 50;
     private static final int pulsingParticlesEnd = 440;
@@ -35,6 +35,9 @@ public class SpawnAnimation {
 
     private static final int sidePillarDownShiftStart = 460;
     private static final int sidePillarDownShiftEnd = 500;
+
+    private static final int pedestalRodShiftStart = 520;
+    private static final int pedestalRodShiftEnd = 540;
 
     // Define tick-based actions
     private static final List<TickAction> actions = List.of(
@@ -98,7 +101,37 @@ public class SpawnAnimation {
                                 tickData.pos.add(1, 1, 6),
                                 tickData.pos.add(6, 1, 1)
                         );
-                        SidePillarShiftingLogic.shiftPillarDown(tickData.world, origins, tickData.spawnTickCounter, sidePillarDownShiftStart);
+                        SidePillarShiftingLogic.shiftPillarDown(tickData.world, tickData.blockEntity,origins, tickData.spawnTickCounter, sidePillarDownShiftStart);
+                    }
+            ),
+            new TickAction(
+                    tick -> tick >= pedestalRodShiftStart && tick <= pedestalRodShiftEnd,
+                    (tickData) -> {
+                        ArrayList<BlockPos> positiveXBlocks = new ArrayList<>(List.of(
+                                tickData.pos.add(5, -1, 0),
+                                tickData.pos.add(6, -1, 0),
+                                tickData.pos.add(5, -2, 3),
+                                tickData.pos.add(6, -2, 3)
+                        ));
+                        ArrayList<BlockPos> negativeXBlocks = new ArrayList<>(List.of(
+                                tickData.pos.add(-2, -1, 3),
+                                tickData.pos.add(-3, -1, 3),
+                                tickData.pos.add(-2, -2, 0),
+                                tickData.pos.add(-3, -2, 0)
+                        ));
+                        ArrayList<BlockPos> positiveZBlocks = new ArrayList<>(List.of(
+                                tickData.pos.add(3, -1, 5),
+                                tickData.pos.add(3, -1, 6),
+                                tickData.pos.add(0, -2, 5),
+                                tickData.pos.add(0, -2, 6)
+                        ));
+                        ArrayList<BlockPos> negativeZBlocks = new ArrayList<>(List.of(
+                                tickData.pos.add(0, -1, -2),
+                                tickData.pos.add(0, -1, -3),
+                                tickData.pos.add(3, -2, -2),
+                                tickData.pos.add(3, -2, -3)
+                        ));
+                        PedestalRodShiftingLogic.shiftPedestalRods(tickData.world, tickData.blockEntity, positiveXBlocks, negativeXBlocks, positiveZBlocks, negativeZBlocks,tickData.spawnTickCounter, pedestalRodShiftStart);
                     }
             ),
             new TickAction(
