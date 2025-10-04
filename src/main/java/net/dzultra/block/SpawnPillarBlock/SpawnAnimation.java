@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class SpawnAnimation {
-    private static final int maxSpawnTickCounter = 480;
+    private static final int maxSpawnTickCounter = 550;
 
     private static final int pulsingParticlesStart = 50;
     private static final int pulsingParticlesEnd = 440;
@@ -33,6 +33,8 @@ public class SpawnAnimation {
     private static final int itemRenderTranslationStart = 290;
     private static final int itemRenderTranslationEnd = 340;
 
+    private static final int sidePillarDownShiftStart = 460;
+    private static final int sidePillarDownShiftEnd = 510;
 
     // Define tick-based actions
     private static final List<TickAction> actions = List.of(
@@ -86,6 +88,18 @@ public class SpawnAnimation {
             new TickAction(
                     tick -> tick == 440,
                     (tickData) -> trySetBlockState(tickData.world, tickData.pos, SpawnPillarBlock.SHOULD_RENDER_BEAM, false)
+            ),
+            new TickAction(
+                    tick -> tick >= sidePillarDownShiftStart && tick <= sidePillarDownShiftEnd,
+                    (tickData) -> {
+                        List<BlockPos> origins = List.of(
+                                tickData.pos.add(1, 1, -4),
+                                tickData.pos.add(-4, 1, 1),
+                                tickData.pos.add(1, 1, 6),
+                                tickData.pos.add(6, 1, 1)
+                        );
+                        SidePillarShiftingLogic.shiftPillarDown(tickData.world, origins, tickData.spawnTickCounter, sidePillarDownShiftStart);
+                    }
             ),
             new TickAction(
                     tick -> true,
