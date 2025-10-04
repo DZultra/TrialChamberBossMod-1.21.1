@@ -34,7 +34,7 @@ public class SpawnAnimation {
     private static final int itemRenderTranslationEnd = 340;
 
     private static final int sidePillarDownShiftStart = 460;
-    private static final int sidePillarDownShiftEnd = 510;
+    private static final int sidePillarDownShiftEnd = 500;
 
     // Define tick-based actions
     private static final List<TickAction> actions = List.of(
