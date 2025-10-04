@@ -1,4 +1,7 @@
-// 1.21.1	2025-10-04T13:45:52.5967464	TrialChamberBossMod/Model Definitions
+// 1.21.1	2025-10-04T14:52:43.0402954	TrialChamberBossMod/Model Definitions
+6614278ce4d9f31d361a97e4866aba1c7788d0c1 assets\tcb-mod\blockstates\reinforced_oxidized_cut_copper_stairs.json
+2925517569b1e49c0c8db816ebba5020a2a16b0c assets\tcb-mod\models\block\reinforced_oxidized_cut_copper_stairs.json
+0eabde915137c63397c6a69020b361c635b12419 assets\tcb-mod\models\item\reinforced_oxidized_cut_copper_stairs.json
 ed71ad045bfd3fc127c1ce28d2db5050eaaa2d75 assets\tcb-mod\blockstates\reinforced_copper_bulb.json
 23563f09fad0bed78af0e029c0087cc4d5cae75c assets\tcb-mod\models\block\reinforced_cut_copper_stairs_outer.json
 c40040939702a87404938244e504e15edfb8f9d1 assets\minecraft\blockstates\cut_copper.json
@@ -19,6 +22,7 @@ c82cae17d0ef9ab264ad46e5ef4cecbecf5359b5 assets\tcb-mod\models\item\reinforced_c
 156cae6cf3f32910e1195fbe1b10ebd1a65f17bc assets\tcb-mod\models\block\reinforced_cut_copper_stairs_inner.json
 416747d680aafe737bca40c02a2ea9e50a738a29 assets\tcb-mod\models\item\spawn_shard.json
 02b411c8bb77ee0fecedea505c6e2b6fb5733812 assets\tcb-mod\models\block\reinforced_copper_block.json
+b2cbf006f93f65f34056f428ee8f1c8a057b1003 assets\minecraft\models\block\oxidized_cut_copper.json
 2bdcd2ba8df3d6a4403656e0bbe9f58d35102523 assets\minecraft\models\block\cut_copper.json
 5b6792db33a5bd987fcb9974514a387b02f802df assets\tcb-mod\blockstates\spawn_pillar.json
 350a9757e77b58d25014c624322525f4bbe42565 assets\tcb-mod\models\block\reinforced_tuff_bricks.json
@@ -29,11 +33,14 @@ e5bdae7d833e3577360150aea0542584aac8511a assets\tcb-mod\blockstates\reinforced_o
 f0c7bc433804993db6a2337151466b713d71054a assets\tcb-mod\blockstates\reinforced_copper_block.json
 926f7f68a98ce9d3f2481b9a8994dfecac0b2d04 assets\tcb-mod\models\item\reinforced_chain.json
 d59d1dc6419952fc9e5aad6728f31674e09e9c98 assets\tcb-mod\models\item\reinforced_cut_copper_stairs.json
+edeb373693b431c1e35efbd4f298a2a2bdb7b40c assets\tcb-mod\models\block\reinforced_oxidized_cut_copper_stairs_inner.json
 b162a4c0e17f7f7911d2c203a1afc3a722c4c9d0 assets\tcb-mod\models\item\reinforced_copper_block.json
 80ceeaf90a140793d112cec3265b904c6aa91aee assets\tcb-mod\models\block\reinforced_copper_bulb_lit.json
 910e15061e6c7f04e908b8ca926523a7d96ff2ac assets\tcb-mod\blockstates\reinforced_chiseled_tuff_bricks.json
 f150d59fb5331501015bc589db0a7c00560b9ffe assets\tcb-mod\blockstates\reinforced_oxidized_cut_copper.json
 59995e465dce29d3bce7be393d7fe326ebe10ce2 assets\tcb-mod\models\item\reinforced_oxidized_cut_copper.json
+209825ed4218880fd28f79db989c391097c83a93 assets\tcb-mod\models\block\reinforced_oxidized_cut_copper_stairs_outer.json
+bd03e94a813fdc4ddc70f847cbcfdf7ffe63d2a0 assets\minecraft\blockstates\oxidized_cut_copper.json
 1fda55bf310680b89db209490ff3ef3344f23c14 assets\tcb-mod\models\block\spawn_pillar.json
 447a30f2a12744aaaea5b79a8bb32c785b6924ba assets\tcb-mod\models\block\reinforced_oxidized_cut_copper.json
 6a954fd9a86506a6bb553e9623b18baf04591da4 assets\tcb-mod\models\block\reinforced_chiseled_tuff_bricks.json

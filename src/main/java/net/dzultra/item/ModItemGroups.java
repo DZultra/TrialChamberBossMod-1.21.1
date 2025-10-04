@@ -23,6 +23,7 @@ public class ModItemGroups {
                         entries.add(ModBlocks.REINFORCED_COPPER_BLOCK);
                         entries.add(ModBlocks.REINFORCED_OXIDIZED_COPPER_BLOCK);
                         entries.add(ModBlocks.REINFORCED_OXIDIZED_CUT_COPPER);
+                        entries.add(ModBlocks.REINFORCED_OXIDIZED_CUT_COPPER_STAIRS);
                         entries.add(ModBlocks.REINFORCED_CUT_COPPER_STAIRS);
                         entries.add(ModBlocks.REINFORCED_COPPER_BULB);
                         entries.add(ModBlocks.REINFORCED_TUFF_BRICKS);

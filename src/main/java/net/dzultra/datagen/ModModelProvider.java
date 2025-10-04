@@ -18,6 +18,7 @@ public class ModModelProvider extends FabricModelProvider {
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
         BlockStateModelGenerator.BlockTexturePool reinforced_copper_pool = blockStateModelGenerator.registerCubeAllModelTexturePool(Blocks.CUT_COPPER);
+        BlockStateModelGenerator.BlockTexturePool reinforced_oxidized_cut_copper_pool = blockStateModelGenerator.registerCubeAllModelTexturePool(Blocks.OXIDIZED_CUT_COPPER);
 
         blockStateModelGenerator.registerSingleton(ModBlocks.SPAWN_PILLAR, TexturedModel.CUBE_BOTTOM_TOP);
 
@@ -33,6 +34,7 @@ public class ModModelProvider extends FabricModelProvider {
         blockStateModelGenerator.registerStateWithModelReference(ModBlocks.REINFORCED_CHAIN, Blocks.CHAIN);
 
         reinforced_copper_pool.stairs(ModBlocks.REINFORCED_CUT_COPPER_STAIRS);
+        reinforced_oxidized_cut_copper_pool.stairs(ModBlocks.REINFORCED_OXIDIZED_CUT_COPPER_STAIRS);
     }
 
     @Override
