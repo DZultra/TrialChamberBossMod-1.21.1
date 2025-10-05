@@ -15,6 +15,7 @@
           and then a single beam goes down to the boss making it glow for a second
     -> while it gives him power, step by step, the pillars held by chains are moved up, using upwards shifting
         -> will be used as a weapon later, if player is below them they can drop down and do dmg
+        -> prior to impact effect on the ground
     -> Block Displays get removed with sound (beacon break)
     -> the pillars on which the block displays are on sink into the ground
     -> big middle pedestal drops down further 3x into the ground (needs a modified Pillar downshifting)
@@ -35,5 +36,7 @@ Immune to Bow, Arrow just ricochets off it
 Also immune to plain Crossbow, needs piercing, the higher piercing the bigger dmg
 
 Needs a pull attack where it spins and pulls player towards them
+
+Fix Chain Render Hitbox when placing chain sideways
 
 fix structure block desync
