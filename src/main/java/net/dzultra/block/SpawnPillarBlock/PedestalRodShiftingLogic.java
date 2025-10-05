@@ -9,7 +9,7 @@ public class PedestalRodShiftingLogic {
     public static void shiftPedestalRods(ServerWorld world, SpawnPillarBlockEntity blockEntity, ArrayList<BlockPos> positiveXBlocks, ArrayList<BlockPos> negativeXBlocks, ArrayList<BlockPos> positiveZBlocks, ArrayList<BlockPos> negativeZBlocks, int spawnTickCounter, int pedestalRodShiftStart) {
         int ticksSinceStart = spawnTickCounter - pedestalRodShiftStart;
 
-        // Sort so you dont override blocks which you want to shift after
+        // Sort so you don't override blocks which you want to shift after
         positiveXBlocks.sort((a, b) -> Integer.compare(b.getX(), a.getX()));
         negativeXBlocks.sort((a, b) -> Integer.compare(a.getX(), b.getX()));
         positiveZBlocks.sort((a, b) -> Integer.compare(b.getZ(), a.getZ()));
