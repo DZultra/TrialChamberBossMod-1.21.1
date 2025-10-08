@@ -39,6 +39,9 @@ public class SpawnAnimation {
     private static final int pedestalRodShiftStart = 520;
     private static final int pedestalRodShiftEnd = 540;
 
+    private static final int chainPillarShiftStart = 560;
+    private static final int chainPillarShiftEnd = 585;
+
     // Define tick-based actions
     private static final List<TickAction> actions = List.of(
             new TickAction(
@@ -132,6 +135,18 @@ public class SpawnAnimation {
                                 tickData.pos.add(3, -2, -3)
                         ));
                         PedestalRodShiftingLogic.shiftPedestalRods(tickData.world, tickData.blockEntity, positiveXBlocks, negativeXBlocks, positiveZBlocks, negativeZBlocks,tickData.spawnTickCounter, pedestalRodShiftStart);
+                    }
+            ),
+            new TickAction(
+                    tick -> tick >= chainPillarShiftStart && tick <= chainPillarShiftEnd,
+                    (tickData) -> {
+                        ArrayList<BlockPos> blockPosList = new ArrayList<>(List.of(
+                                tickData.pos.add(-4, -4, -4),
+                                tickData.pos.add(6, -4, -4),
+                                tickData.pos.add(6, -4, 6),
+                                tickData.pos.add(-4, -4, 6)
+                        ));
+                        ChainPillarShiftingLogic.shiftChainPillar(tickData.world, tickData.blockEntity, blockPosList, tickData.spawnTickCounter, chainPillarShiftStart);
                     }
             ),
             new TickAction(

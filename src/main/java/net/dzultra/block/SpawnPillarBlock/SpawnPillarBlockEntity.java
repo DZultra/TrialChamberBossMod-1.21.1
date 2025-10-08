@@ -28,6 +28,7 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
     private int z_render_sign = 0;
     private int side_pillar_y = 0;
     private int pedestal_rods_offset = 0;
+    private int chain_pillar_offset = 0;
 
     public SpawnPillarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SPAWN_PILLAR_BE, pos, state);
@@ -158,6 +159,21 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         this.markDirty();
     }
 
+    public int getChain_pillar_offset() {
+        this.markDirty();
+        return chain_pillar_offset;
+    }
+
+    public void setChain_pillar_offset(int amount) {
+        chain_pillar_offset = amount;
+        this.markDirty();
+    }
+
+    public void incrementChain_pillar_offset() {
+        chain_pillar_offset++;
+        this.markDirty();
+    }
+
     public boolean isRunningLogic() {
         return this.getSpawnTickCounter() > 0;
     }
@@ -177,6 +193,7 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         nbt.putInt("z_render_sign", z_render_sign);
         nbt.putInt("side_pillar_y", side_pillar_y);
         nbt.putInt("pedestal_rods_offset", pedestal_rods_offset);
+        nbt.putInt("chain_pillar_offset", chain_pillar_offset);
         nbt.putFloat("x_item_render_offset", x_item_render_offset);
         nbt.putFloat("y_item_render_offset", y_item_render_offset);
         nbt.putFloat("z_item_render_offset", z_item_render_offset);
@@ -192,6 +209,7 @@ public class SpawnPillarBlockEntity extends BlockEntity implements ImplementedIn
         z_render_sign = nbt.getInt("z_render_sign");
         side_pillar_y = nbt.getInt("side_pillar_y");
         pedestal_rods_offset = nbt.getInt("pedestal_rods_offset");
+        chain_pillar_offset = nbt.getInt("chain_pillar_offset");
         x_item_render_offset = nbt.getFloat("x_item_render_offset");
         y_item_render_offset = nbt.getFloat("y_item_render_offset");
         z_item_render_offset = nbt.getFloat("z_item_render_offset");
