@@ -66,37 +66,64 @@ public class ChainPillarEntity extends Entity {
 
     @Override
     public void tick() {
-        // Apply appropriate vertical motion before moving
+        // --- Falling ---
         if (this.shouldFall) {
+            this.noClip = false;
             this.applyGravity();
+            this.move(MovementType.SELF, this.getVelocity());
             this.timeFalling++;
-        } else {
-            // Move upwards using raisingVelocity
-            this.setVelocity(this.getVelocity().x, this.raisingVelocity, this.getVelocity().z);
-            this.timeRaising++;
-        }
 
-        this.move(MovementType.SELF, this.getVelocity());
-
-        if (this.shouldFall) { // Falling behavior
             if (this.isOnGround()) {
                 if (this.getWorld() instanceof ServerWorld serverWorld) {
                     this.placeChainPillar(serverWorld, this.getPos());
                     this.discard();
                 }
             }
-        } else { // Raising Behavior
-            if (this.spawnY + this.raisingDistance <= this.getY() + 0.01) {
-                // Stop vertical motion and finish
-                this.setVelocity(0.0, 0.0, 0.0);
-                this.discard();
-                if (this.getWorld() instanceof ServerWorld serverWorld) {
-                    this.placeChainPillar(serverWorld, this.getPos().add(0, 1, 0));
-                }
+            return;
+        }
+
+        // --- Raising ---
+        this.noClip = true;
+
+        // Calculate target position and smooth progress
+        double targetY = this.spawnY + this.raisingDistance;
+        double currentY = this.getY();
+        double distanceRemaining = targetY - currentY;
+
+        // Smooth raising using lerp (exponential smoothing)
+        double smoothing = 0.15D; // smaller = slower acceleration, smoother overall
+        double desiredVelocity = this.raisingVelocity;
+        double currentVelocityY = this.getVelocity().y;
+        double newVelocityY = currentVelocityY + (desiredVelocity - currentVelocityY) * smoothing;
+
+        // Clamp so it never overshoots
+        if (distanceRemaining < newVelocityY) {
+            newVelocityY = distanceRemaining;
+        }
+
+        this.setVelocity(0.0, newVelocityY, 0.0);
+        this.move(MovementType.SELF, this.getVelocity());
+        this.timeRaising++;
+
+        // Stop when reached target
+        if (this.getY() >= targetY - 0.01) {
+            this.setVelocity(Vec3d.ZERO);
+            if (this.getWorld() instanceof ServerWorld serverWorld) {
+                this.placeChainPillar(serverWorld, this.getPos());
             }
+            this.discard();
+            return;
+        }
+
+        // Optional: remove blocks during motion
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
+            BlockPos blockPos = BlockPos.ofFloored(this.getPos());
+            BlockPos pos1 = blockPos.add(-1, 0, 0);
+            BlockPos pos2 = blockPos.add(0, 0, -1);
+            serverWorld.removeBlock(pos1, false);
+            serverWorld.removeBlock(pos2, false);
         }
     }
-
     private void placeChainPillar(ServerWorld world, Vec3d pos) {
         BlockPos blockPos = BlockPos.ofFloored(pos).add(-1, 0, -1);
 

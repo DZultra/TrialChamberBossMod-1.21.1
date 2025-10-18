@@ -2,7 +2,6 @@ package net.dzultra.block;
 
 import net.dzultra.TrialChamberBossMod;
 import net.dzultra.block.SpawnPillarBlock.SpawnPillarBlock;
-import net.dzultra.block.custom.ReinforcedChain;
 import net.minecraft.block.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -25,7 +24,7 @@ public class ModBlocks {
     public static final Block REINFORCED_CHISELED_TUFF_BRICKS = registerReinforcedBlock("reinforced_chiseled_tuff_bricks", Blocks.CHISELED_TUFF_BRICKS);
     public static final Block REINFORCED_POLISHED_TUFF = registerReinforcedBlock("reinforced_polished_tuff", Blocks.POLISHED_TUFF);
     public static final Block REINFORCED_COPPER_BULB = registerReinforcedBulbBlock("reinforced_copper_bulb", Blocks.WAXED_COPPER_BULB);
-    public static final Block REINFORCED_CHAIN = registerReinforcedChainBlock("reinforced_chain", new ReinforcedChain(AbstractBlock.Settings.copy(Blocks.CHAIN).strength(-1F, 3600000.0F).nonOpaque()));
+    public static final Block REINFORCED_CHAIN = registerReinforcedChainBlock("reinforced_chain", Blocks.CHAIN);
     public static final Block REINFORCED_CUT_COPPER_STAIRS = registerReinforcedStairsBlock("reinforced_cut_copper_stairs", Blocks.WAXED_CUT_COPPER_STAIRS);
     public static final Block REINFORCED_OXIDIZED_CUT_COPPER_STAIRS = registerReinforcedStairsBlock("reinforced_oxidized_cut_copper_stairs", Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS);
     public static final Block REINFORCED_OXIDIZED_CUT_COPPER = registerReinforcedBlock("reinforced_oxidized_cut_copper", Blocks.WAXED_OXIDIZED_CUT_COPPER);

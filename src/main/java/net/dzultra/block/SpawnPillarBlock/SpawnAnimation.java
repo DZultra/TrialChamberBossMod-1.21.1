@@ -158,7 +158,7 @@ public class SpawnAnimation {
                                 tickData.pos.getY() - 4,
                                 tickData.pos.getZ() - 3
                         );
-                        ChainPillarEntity chainPillarEntity = ChainPillarEntity.of(tickData.world, spawnPos, 0, 0.04, 6, false);
+                        ChainPillarEntity chainPillarEntity = ChainPillarEntity.of(tickData.world, spawnPos, 0, 0.1, 6, false);
                         tickData.world.spawnEntity(chainPillarEntity);
 
                         ArrayList<BlockPos> blockPosList = new ArrayList<>(List.of(
