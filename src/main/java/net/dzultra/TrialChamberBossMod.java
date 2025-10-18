@@ -1,5 +1,6 @@
 package net.dzultra;
 
+import net.dzultra.block.ModBlocks;
 import net.dzultra.entity.ModEntities;
 import net.dzultra.item.ModItemGroups;
 import net.dzultra.item.ModItems;
@@ -19,6 +20,7 @@ public class TrialChamberBossMod implements ModInitializer {
 		ModPayloads.registerModPayloads();
 		ModEntities.registerModEntities();
 		ModItems.registerModItems();
+		ModBlocks.registerModBlocks();
 		ModItemGroups.registerModItemGroups();
 	}
 }

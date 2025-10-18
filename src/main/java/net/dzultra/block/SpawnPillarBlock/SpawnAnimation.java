@@ -1,5 +1,6 @@
 package net.dzultra.block.SpawnPillarBlock;
 
+import net.dzultra.entity.custom.ChainPillarEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -137,16 +138,48 @@ public class SpawnAnimation {
                         PedestalRodShiftingLogic.shiftPedestalRods(tickData.world, tickData.blockEntity, positiveXBlocks, negativeXBlocks, positiveZBlocks, negativeZBlocks,tickData.spawnTickCounter, pedestalRodShiftStart);
                     }
             ),
+//            new TickAction(
+//                    tick -> tick >= chainPillarShiftStart && tick <= chainPillarShiftEnd,
+//                    (tickData) -> {
+//                        ArrayList<BlockPos> blockPosList = new ArrayList<>(List.of(
+//                                tickData.pos.add(-4, -4, -4),
+//                                tickData.pos.add(6, -4, -4),
+//                                tickData.pos.add(6, -4, 6),
+//                                tickData.pos.add(-4, -4, 6)
+//                        ));
+//                        ChainPillarShiftingLogic.shiftChainPillar(tickData.world, tickData.blockEntity, blockPosList, tickData.spawnTickCounter, chainPillarShiftStart);
+//                    }
+//            ),
             new TickAction(
-                    tick -> tick >= chainPillarShiftStart && tick <= chainPillarShiftEnd,
+                    tick -> tick == chainPillarShiftStart,
                     (tickData) -> {
+                        Vec3d spawnPos = new Vec3d(
+                                tickData.pos.getX() - 3,
+                                tickData.pos.getY() - 4,
+                                tickData.pos.getZ() - 3
+                        );
+                        ChainPillarEntity chainPillarEntity = ChainPillarEntity.of(tickData.world, spawnPos, 0, 0.04, 6, false);
+                        tickData.world.spawnEntity(chainPillarEntity);
+
                         ArrayList<BlockPos> blockPosList = new ArrayList<>(List.of(
                                 tickData.pos.add(-4, -4, -4),
                                 tickData.pos.add(6, -4, -4),
                                 tickData.pos.add(6, -4, 6),
                                 tickData.pos.add(-4, -4, 6)
                         ));
-                        ChainPillarShiftingLogic.shiftChainPillar(tickData.world, tickData.blockEntity, blockPosList, tickData.spawnTickCounter, chainPillarShiftStart);
+                        for (int x = 0; x < 2; x++) {
+                            for (int y = 0; y < 4; y++) {
+                                for (int z = 0; z < 2; z++) {
+                                    for (int i = 0; i < 4; i++) {
+                                        tickData.world.removeBlock(new BlockPos(
+                                                blockPosList.get(i).getX() + x,
+                                                blockPosList.get(i).getY() + y,
+                                                blockPosList.get(i).getZ() + z
+                                        ), false);
+                                    }
+                                }
+                            }
+                        }
                     }
             ),
             new TickAction(

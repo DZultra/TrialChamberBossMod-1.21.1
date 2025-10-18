@@ -2,6 +2,7 @@ package net.dzultra.entity;
 
 import net.dzultra.TrialChamberBossMod;
 import net.dzultra.entity.custom.BossEntity;
+import net.dzultra.entity.custom.ChainPillarEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.registry.Registries;
@@ -13,6 +14,11 @@ public class ModEntities {
             Identifier.of(TrialChamberBossMod.MOD_ID, "trial_chamber_boss_entity"),
             EntityType.Builder.create(BossEntity::new, SpawnGroup.CREATURE)
                     .dimensions(0.5f, 0.5f).build());
+
+    public static final EntityType<ChainPillarEntity> CHAIN_PILLAR_ENTITY = Registry.register(Registries.ENTITY_TYPE,
+            Identifier.of(TrialChamberBossMod.MOD_ID, "chain_pillar_entity"),
+            EntityType.Builder.create(ChainPillarEntity::new, SpawnGroup.MISC)
+                    .dimensions(2f, 4f).build());
 
 
     public static void registerModEntities() {

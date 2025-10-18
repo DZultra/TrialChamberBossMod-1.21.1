@@ -37,6 +37,6 @@ Also immune to plain Crossbow, needs piercing, the higher piercing the bigger dm
 
 Needs a pull attack where it spins and pulls player towards them
 
-Fix Chain Render Hitbox when placing chain sideways
 
 fix structure block desync
+fix block drop handling while doing block animation stuff
