@@ -1,5 +1,6 @@
 package net.dzultra.entity.custom;
 
+import net.dzultra.TrialChamberBossMod;
 import net.dzultra.block.ModBlocks;
 import net.dzultra.entity.ModEntities;
 import net.minecraft.entity.Entity;
@@ -64,14 +65,16 @@ public class ChainPillarEntity extends Entity {
         return this.fallingGravity;
     }
 
-    @Override
     public void tick() {
-        // --- Falling ---
+        if (this.getWorld().isClient) {
+            super.tick();
+            return; // logic only runs on server
+        }
+
         if (this.shouldFall) {
-            this.noClip = false;
+            // --- Falling behavior ---
             this.applyGravity();
             this.move(MovementType.SELF, this.getVelocity());
-            this.timeFalling++;
 
             if (this.isOnGround()) {
                 if (this.getWorld() instanceof ServerWorld serverWorld) {
@@ -82,47 +85,26 @@ public class ChainPillarEntity extends Entity {
             return;
         }
 
-        // --- Raising ---
+        // --- Raising behavior ---
         this.noClip = true;
 
-        // Calculate target position and smooth progress
-        double targetY = this.spawnY + this.raisingDistance;
-        double currentY = this.getY();
-        double distanceRemaining = targetY - currentY;
-
-        // Smooth raising using lerp (exponential smoothing)
-        double smoothing = 0.15D; // smaller = slower acceleration, smoother overall
-        double desiredVelocity = this.raisingVelocity;
-        double currentVelocityY = this.getVelocity().y;
-        double newVelocityY = currentVelocityY + (desiredVelocity - currentVelocityY) * smoothing;
-
-        // Clamp so it never overshoots
-        if (distanceRemaining < newVelocityY) {
-            newVelocityY = distanceRemaining;
-        }
-
-        this.setVelocity(0.0, newVelocityY, 0.0);
+        // constant upward motion (smooth)
+        double velY = this.raisingVelocity;
+        this.setVelocity(0, velY, 0);
         this.move(MovementType.SELF, this.getVelocity());
         this.timeRaising++;
 
-        // Stop when reached target
-        if (this.getY() >= targetY - 0.01) {
+        // check if reached target
+        if (this.getY() >= this.spawnY + this.raisingDistance) {
             this.setVelocity(Vec3d.ZERO);
+            this.discard();
+
             if (this.getWorld() instanceof ServerWorld serverWorld) {
                 this.placeChainPillar(serverWorld, this.getPos());
             }
-            this.discard();
-            return;
         }
 
-        // Optional: remove blocks during motion
-        if (this.getWorld() instanceof ServerWorld serverWorld) {
-            BlockPos blockPos = BlockPos.ofFloored(this.getPos());
-            BlockPos pos1 = blockPos.add(-1, 0, 0);
-            BlockPos pos2 = blockPos.add(0, 0, -1);
-            serverWorld.removeBlock(pos1, false);
-            serverWorld.removeBlock(pos2, false);
-        }
+        this.noClip = false;
     }
     private void placeChainPillar(ServerWorld world, Vec3d pos) {
         BlockPos blockPos = BlockPos.ofFloored(pos).add(-1, 0, -1);
